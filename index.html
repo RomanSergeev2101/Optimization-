@@ -8,151 +8,138 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0f0f13;--surface:#18181f;--border:#2a2a38;
-  --accent:#6c63ff;--accent2:#a78bfa;
-  --text:#e8e8f0;--muted:#6b6b80;
-  --green:#34d399;--red:#f87171;--yellow:#fbbf24;--hover:#1e1e2a;
-}
+:root{--bg:#0f0f13;--surface:#18181f;--border:#2a2a38;--accent:#6c63ff;--accent2:#a78bfa;--text:#e8e8f0;--muted:#6b6b80;--green:#34d399;--red:#f87171;--yellow:#fbbf24;--hover:#1e1e2a}
 body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh}
-header{border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--bg);z-index:100}
-.logo{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);white-space:nowrap}
-.tab-bar{display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:10px;margin-left:auto}
-.tab{padding:6px 16px;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap}
+header{border-bottom:1px solid var(--border);padding:11px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);z-index:100}
+.logo{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);white-space:nowrap}
+.tab-bar{display:flex;gap:3px;background:var(--surface);padding:3px;border-radius:9px;margin-left:auto}
+.tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap}
 .tab.active{background:var(--accent);color:#fff}
 .tab:hover:not(.active){color:var(--text)}
-.hdr-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--green);background:rgba(52,211,153,.1);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.hdr-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;border:1.5px solid var(--green);background:rgba(52,211,153,.1);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .hdr-btn:hover{background:rgba(52,211,153,.22)}
-.sb-status{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
-.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.sb-status{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;flex-shrink:0}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
 .sb-dot.ok{background:var(--green)}
-.main{display:flex;height:calc(100vh - 53px)}
+.main{display:flex;height:calc(100vh - 49px)}
 .page{display:none;flex:1;overflow:hidden}
 .page.active{display:flex}
-/* SIDEBAR */
-.sidebar{width:270px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.sidebar-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-.upload-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;transition:all .15s;width:100%}
+.sidebar{width:260px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-head{padding:11px 13px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.upload-btn{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:7px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;transition:all .15s;width:100%}
 .upload-btn:hover{border-color:var(--accent);color:var(--accent2)}
 .upload-btn.loaded{border-color:var(--green);color:var(--green);border-style:solid}
-.search-box{width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;outline:none}
+.search-box{width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none}
 .search-box::placeholder{color:var(--muted)}
 .search-box:focus{border-color:var(--accent)}
-.art-list{overflow-y:auto;flex:1;padding:5px}
-.art-item{padding:9px 12px;border-radius:7px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .1s}
+.art-list{overflow-y:auto;flex:1;padding:4px}
+.art-item{padding:8px 11px;border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:7px;transition:background .1s}
 .art-item:hover{background:var(--hover)}
 .art-item.sel{background:rgba(108,99,255,.15)}
 .art-code{font-size:12px;font-weight:700;font-family:'Courier New',monospace}
-.art-qty{font-size:11px;font-weight:700;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:2px 7px;color:var(--muted);flex-shrink:0}
-.content{flex:1;overflow-y:auto;padding:20px 24px}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60%;gap:10px;color:var(--muted);text-align:center}
-.empty-state .ico{font-size:44px;opacity:.4}
-.empty-state h3{font-size:15px;font-weight:700;color:var(--text)}
-.empty-state p{font-size:12px;max-width:260px;line-height:1.6}
-/* DETAIL */
-.detail-title{font-size:20px;font-weight:800;font-family:'Courier New',monospace;color:var(--accent2);margin-bottom:7px}
-.tags{display:flex;gap:7px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
-.tag{padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.art-qty{font-size:10px;font-weight:700;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--muted);flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:18px 22px}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60%;gap:9px;color:var(--muted);text-align:center}
+.empty-state .ico{font-size:40px;opacity:.4}
+.empty-state h3{font-size:14px;font-weight:700;color:var(--text)}
+.empty-state p{font-size:12px;max-width:240px;line-height:1.6}
+.detail-title{font-size:19px;font-weight:800;font-family:'Courier New',monospace;color:var(--accent2);margin-bottom:6px}
+.tags{display:flex;gap:6px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
 .tag-cat{background:rgba(108,99,255,.2);color:var(--accent2)}
 .tag-box{background:rgba(52,211,153,.1);color:var(--green)}
 .tag-tot{background:rgba(251,191,36,.1);color:var(--yellow)}
-.det-actions{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-.btn-exp{display:flex;align-items:center;gap:5px;padding:8px 16px;border-radius:8px;border:1.5px solid var(--accent);background:rgba(108,99,255,.12);color:var(--accent2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.det-actions{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}
+.btn-exp{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;border:1.5px solid var(--accent);background:rgba(108,99,255,.12);color:var(--accent2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
 .btn-exp:hover{background:rgba(108,99,255,.25)}
 .btn-exp.green{border-color:var(--green);background:rgba(52,211,153,.08);color:var(--green)}
 .btn-exp.green:hover{background:rgba(52,211,153,.2)}
 .flat-table{width:100%;border-collapse:collapse;font-size:13px}
-.flat-table th{text-align:left;padding:9px 12px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface)}
-.flat-table td{padding:10px 12px;border-bottom:1px solid rgba(42,42,56,.6)}
+.flat-table th{text-align:left;padding:8px 11px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface)}
+.flat-table td{padding:9px 11px;border-bottom:1px solid rgba(42,42,56,.6)}
 .flat-table tr:hover td{background:var(--hover)}
 .flat-table tfoot td{border-top:2px solid var(--border);border-bottom:none;background:var(--surface)}
-.sz-badge{display:inline-block;padding:3px 9px;border-radius:5px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:700}
+.sz-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:700}
 .qty-cell{font-weight:800;font-size:14px;font-family:'Courier New',monospace}
-/* SKU */
 .sku-page{flex-direction:column}
 .sku-top{flex-shrink:0;border-bottom:1px solid var(--border);background:var(--bg);display:none}
-.sku-ctrl{padding:12px 20px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;border-bottom:1px solid var(--border)}
-.sku-filters{padding:10px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.ctrl-grp{display:flex;flex-direction:column;gap:4px}
+.sku-ctrl{padding:11px 18px;display:flex;gap:11px;align-items:flex-end;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.sku-filters{padding:9px 18px;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.ctrl-grp{display:flex;flex-direction:column;gap:3px}
 .ctrl-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.ctrl-inp{padding:6px 9px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-weight:600;width:100px;outline:none}
+.ctrl-inp{padding:6px 8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;font-weight:600;width:95px;outline:none}
 .ctrl-inp:focus{border-color:var(--accent)}
-.ctrl-inp.sm{width:68px}
-.filter-inp{padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;outline:none}
-.filter-inp:focus{border-color:var(--accent)}
-.filter-sel{padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;outline:none;cursor:pointer}
-.filter-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.filter-grp{display:flex;flex-direction:column;gap:3px}
+.ctrl-inp.sm{width:64px}
+.filter-inp,.filter-sel{padding:5px 9px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;outline:none}
+.filter-inp:focus,.filter-sel:focus{border-color:var(--accent)}
+.filter-grp{display:flex;flex-direction:column;gap:2px}
+.filter-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .sku-body{flex:1;overflow:hidden;flex-direction:column;display:none}
-.abc-cards{display:flex;gap:10px;padding:12px 20px 0;flex-shrink:0;flex-wrap:wrap}
-.abc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;min-width:140px}
-.abc-card-title{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.abc-cards{display:flex;gap:9px;padding:11px 18px 0;flex-shrink:0;flex-wrap:wrap}
+.abc-card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 15px;flex:1;min-width:130px}
+.abc-card-title{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
 .abc-card-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;color:var(--muted)}
 .abc-card-row span:last-child{font-weight:700;color:var(--text)}
-.sku-table-wrap{flex:1;overflow:auto;padding:12px 20px 20px}
-.sku-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1100px}
-.sku-tbl th{position:sticky;top:0;background:var(--bg);padding:8px 10px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);z-index:2;white-space:nowrap;cursor:pointer;user-select:none}
+.sku-table-wrap{flex:1;overflow:auto;padding:11px 18px 18px}
+.sku-tbl{width:100%;border-collapse:collapse;font-size:11.5px;min-width:1050px}
+.sku-tbl th{position:sticky;top:0;background:var(--bg);padding:7px 9px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);z-index:2;white-space:nowrap;cursor:pointer;user-select:none}
 .sku-tbl th:hover{color:var(--text)}
-.sku-tbl td{padding:8px 10px;border-bottom:1px solid rgba(42,42,56,.5);white-space:nowrap}
+.sku-tbl td{padding:7px 9px;border-bottom:1px solid rgba(42,42,56,.5);white-space:nowrap}
 .sku-tbl tr:hover td{background:var(--hover)}
-.abc-A{display:inline-block;padding:2px 9px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
-.abc-B{display:inline-block;padding:2px 9px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
-.abc-C{display:inline-block;padding:2px 9px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(107,107,128,.15);color:#9ca3af;border:1px solid rgba(107,107,128,.25)}
+.abc-A{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
+.abc-B{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.abc-C{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;background:rgba(107,107,128,.15);color:#9ca3af;border:1px solid rgba(107,107,128,.25)}
 .c-base{color:var(--accent2);font-weight:800}
 .c-min{color:var(--red);font-weight:600}
 .c-max{color:var(--green);font-weight:600}
-.plan-inp{padding:4px 7px;background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--yellow);font-size:11px;font-weight:700;outline:none;width:70px}
+.plan-inp{padding:4px 6px;background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--yellow);font-size:11px;font-weight:700;outline:none;width:65px}
 .plan-inp:focus{border-color:var(--yellow)}
 .plan-inp::placeholder{color:var(--muted);font-weight:400}
 .sku-upload{flex:1;display:flex;align-items:center;justify-content:center}
-.drop-zone{border:2px dashed var(--border);border-radius:14px;padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);max-width:420px;width:100%}
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);max-width:400px;width:100%}
 .drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:rgba(108,99,255,.05)}
-.drop-zone .big{font-size:48px;margin-bottom:10px;opacity:.5}
-.drop-zone h3{font-size:15px;font-weight:700;margin-bottom:5px}
+.drop-zone .big{font-size:44px;margin-bottom:9px;opacity:.5}
+.drop-zone h3{font-size:14px;font-weight:700;margin-bottom:4px}
 .drop-zone p{font-size:12px;color:var(--muted);line-height:1.6}
-/* HISTORY */
-.history-page{flex-direction:column;overflow:auto;padding:24px}
-.history-list{display:flex;flex-direction:column;gap:10px;max-width:800px}
-.history-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s}
+.history-page{flex-direction:column;overflow:auto;padding:20px}
+.history-list{display:flex;flex-direction:column;gap:8px;max-width:760px}
+.history-item{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
 .history-item:hover{border-color:var(--accent);background:var(--hover)}
 .history-item.active-rep{border-color:var(--green)}
-.hist-date{font-size:11px;color:var(--muted)}
 .hist-name{font-size:13px;font-weight:700;color:var(--text)}
-.hist-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.hist-badge{padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(108,99,255,.15);color:var(--accent2)}
-.hist-del{margin-left:auto;padding:5px 10px;border-radius:6px;border:1px solid rgba(248,113,113,.3);background:transparent;color:var(--red);font-size:11px;cursor:pointer;transition:all .15s}
+.hist-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.hist-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(108,99,255,.15);color:var(--accent2);white-space:nowrap}
+.hist-badge.active{background:rgba(52,211,153,.15);color:var(--green)}
+.hist-del{margin-left:auto;padding:4px 9px;border-radius:5px;border:1px solid rgba(248,113,113,.3);background:transparent;color:var(--red);font-size:11px;cursor:pointer;flex-shrink:0}
 .hist-del:hover{background:rgba(248,113,113,.1)}
-/* DASHBOARD */
-.dash-page{flex-direction:column;overflow:auto;padding:20px 24px}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
-.dash-card h4{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.dash-page{flex-direction:column;overflow:auto;padding:18px 22px}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.dash-card h4{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .dash-card.full{grid-column:1/-1}
-.kpi-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;flex:1;min-width:130px}
-.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
-.kpi-val{font-size:22px;font-weight:800;color:var(--text)}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
-/* DIRECTORY */
-.dir-page{flex-direction:column;overflow:auto;padding:20px 24px}
-.dir-toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.kpi-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 16px;flex:1;min-width:120px}
+.kpi-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.kpi-val{font-size:20px;font-weight:800;color:var(--text)}
+.dir-page{flex-direction:column;overflow:auto;padding:18px 22px}
+.dir-toolbar{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .dir-tbl{width:100%;border-collapse:collapse;font-size:12px}
-.dir-tbl th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:1}
-.dir-tbl td{padding:8px 10px;border-bottom:1px solid rgba(42,42,56,.5)}
+.dir-tbl th{text-align:left;padding:7px 9px;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:1}
+.dir-tbl td{padding:7px 9px;border-bottom:1px solid rgba(42,42,56,.5)}
 .dir-tbl tr:hover td{background:var(--hover)}
-.dir-inp{padding:5px 8px;background:var(--bg);border:1px solid transparent;border-radius:5px;color:var(--text);font-size:12px;outline:none;width:100%}
+.dir-inp{padding:4px 7px;background:transparent;border:1px solid transparent;border-radius:4px;color:var(--text);font-size:12px;outline:none;width:100%}
 .dir-inp:focus{border-color:var(--accent);background:var(--surface)}
-/* MISC */
-::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
-.no-data{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.no-data{padding:36px;text-align:center;color:var(--muted);font-size:13px}
 input[type=file]{display:none}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 16px;font-size:12px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:300px}
 .toast.show{opacity:1}
 .toast.ok{border-color:var(--green);color:var(--green)}
 .toast.err{border-color:var(--red);color:var(--red)}
-.loading{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+.loading-overlay{position:fixed;inset:0;background:rgba(15,15,19,.85);display:flex;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:12px;display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
@@ -162,17 +149,16 @@ input[type=file]{display:none}
   <div class="logo">📦 Analytics</div>
   <div class="tab-bar">
     <button class="tab active" id="t-pl"   onclick="showTab('pl')">Паккинг лист</button>
-    <button class="tab"        id="t-sku"  onclick="showTab('sku')">📊 Анализ SKU</button>
+    <button class="tab"        id="t-sku"  onclick="showTab('sku')">📊 SKU</button>
     <button class="tab"        id="t-dash" onclick="showTab('dash')">📈 Дашборд</button>
     <button class="tab"        id="t-dir"  onclick="showTab('dir')">📋 Справочник</button>
     <button class="tab"        id="t-hist" onclick="showTab('hist')">🕐 История</button>
   </div>
-  <div class="sb-status" id="sb-status"><div class="sb-dot" id="sb-dot"></div><span id="sb-txt">Supabase...</span></div>
+  <div class="sb-status"><div class="sb-dot" id="sb-dot"></div><span id="sb-txt">Connecting...</span></div>
   <button class="hdr-btn" id="btn-exp-all" style="display:none" onclick="exportAll()">↓ Весь список</button>
 </header>
 
 <div class="main">
-
   <!-- PACKING LIST -->
   <div class="page active" id="page-pl">
     <aside class="sidebar">
@@ -181,98 +167,62 @@ input[type=file]{display:none}
           <span>📂</span><span id="pl-label">Загрузить паккинг лист (.xlsx)</span>
         </button>
         <input type="file" id="f-pl" accept=".xlsx,.xls" onchange="loadPL(this)">
-        <input class="search-box" id="pl-search" placeholder="🔍 Поиск по артикулу..." oninput="filterPL()" disabled>
+        <input class="search-box" id="pl-search" placeholder="🔍 Поиск..." oninput="filterPL()" disabled>
       </div>
       <div class="art-list" id="art-list"><div class="no-data">Загрузите файл паккинг листа</div></div>
     </aside>
     <div class="content" id="pl-detail">
-      <div class="empty-state">
-        <div class="ico">👆</div>
-        <h3>Выберите артикул</h3>
-        <p>Загрузите паккинг лист и выберите артикул из списка слева.</p>
-      </div>
+      <div class="empty-state"><div class="ico">👆</div><h3>Выберите артикул</h3><p>Загрузите паккинг лист и выберите артикул слева.</p></div>
     </div>
   </div>
 
-  <!-- SKU ANALYSIS -->
+  <!-- SKU -->
   <div class="page sku-page" id="page-sku">
     <div class="sku-top" id="sku-top">
       <div class="sku-ctrl">
         <div class="ctrl-grp"><div class="ctrl-lbl">Магазинов сейчас</div><input class="ctrl-inp" id="s-now" type="number" min="1" value="10" oninput="recalc()"></div>
         <div class="ctrl-grp"><div class="ctrl-lbl">Магазинов будет</div><input class="ctrl-inp" id="s-fut" type="number" min="1" value="10" oninput="recalc()"></div>
         <div class="ctrl-grp"><div class="ctrl-lbl">Период (дней)</div><input class="ctrl-inp" id="s-per" type="number" min="1" value="60" oninput="recalc()"></div>
-        <div class="ctrl-grp"><div class="ctrl-lbl">Буфер ±%</div><input class="ctrl-inp sm" id="s-buf" type="number" min="0" max="100" value="20" oninput="recalc()"></div>
+        <div class="ctrl-grp"><div class="ctrl-lbl">Буфер ±%</div><input class="ctrl-inp sm" id="s-buf" type="number" value="20" oninput="recalc()"></div>
         <div class="ctrl-grp"><div class="ctrl-lbl">ABC A до %</div><input class="ctrl-inp sm" id="s-a" type="number" value="80" oninput="recalc()"></div>
         <div class="ctrl-grp"><div class="ctrl-lbl">B до %</div><input class="ctrl-inp sm" id="s-b" type="number" value="95" oninput="recalc()"></div>
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-end">
+        <div style="margin-left:auto;display:flex;gap:7px;align-items:flex-end">
           <button class="btn-exp" onclick="saveSettings()">💾 Сохранить</button>
           <button class="btn-exp green" onclick="exportSKU()">↓ Excel</button>
         </div>
       </div>
       <div class="sku-filters">
-        <div class="filter-grp"><div class="filter-label">Поиск</div><input class="filter-inp" id="f-search" placeholder="Артикул..." oninput="applyFilters()" style="width:140px"></div>
-        <div class="filter-grp"><div class="filter-label">ABC</div>
-          <select class="filter-sel" id="f-abc" onchange="applyFilters()">
-            <option value="">Все</option><option>A</option><option>B</option><option>C</option>
-          </select>
-        </div>
-        <div class="filter-grp"><div class="filter-label">Статус</div>
-          <select class="filter-sel" id="f-status" onchange="applyFilters()">
-            <option value="">Все</option>
-            <option value="urgent">🔴 Срочно</option>
-            <option value="watch">🟡 Следить</option>
-            <option value="ok">🟢 Ок</option>
-          </select>
-        </div>
-        <div class="filter-grp"><div class="filter-label">Категория</div>
-          <select class="filter-sel" id="f-cat" onchange="applyFilters()"><option value="">Все</option></select>
-        </div>
-        <div class="filter-grp"><div class="filter-label">Гендер</div>
-          <select class="filter-sel" id="f-gender" onchange="applyFilters()"><option value="">Все</option></select>
-        </div>
-        <div class="filter-grp"><div class="filter-label">Возраст</div>
-          <select class="filter-sel" id="f-age" onchange="applyFilters()"><option value="">Все</option></select>
-        </div>
-        <div style="margin-left:auto;font-size:11px;color:var(--muted)" id="filter-count"></div>
+        <div class="filter-grp"><div class="filter-label">Поиск</div><input class="filter-inp" id="f-search" placeholder="Артикул..." oninput="applyFilters()" style="width:130px"></div>
+        <div class="filter-grp"><div class="filter-label">ABC</div><select class="filter-sel" id="f-abc" onchange="applyFilters()"><option value="">Все</option><option>A</option><option>B</option><option>C</option></select></div>
+        <div class="filter-grp"><div class="filter-label">Статус</div><select class="filter-sel" id="f-status" onchange="applyFilters()"><option value="">Все</option><option value="urgent">🔴 Срочно</option><option value="watch">🟡 Следить</option><option value="ok">🟢 Ок</option></select></div>
+        <div class="filter-grp"><div class="filter-label">Категория</div><select class="filter-sel" id="f-cat" onchange="applyFilters()"><option value="">Все</option></select></div>
+        <div class="filter-grp"><div class="filter-label">Гендер</div><select class="filter-sel" id="f-gender" onchange="applyFilters()"><option value="">Все</option></select></div>
+        <div class="filter-grp"><div class="filter-label">Возраст</div><select class="filter-sel" id="f-age" onchange="applyFilters()"><option value="">Все</option></select></div>
+        <span id="filter-count" style="margin-left:auto;font-size:10px;color:var(--muted)"></span>
       </div>
     </div>
     <div id="sku-upload" class="sku-upload">
-      <div class="drop-zone" id="sku-drop"
-        onclick="document.getElementById('f-sku').click()"
-        ondragover="event.preventDefault();this.classList.add('drag')"
-        ondragleave="this.classList.remove('drag')"
-        ondrop="skuDrop(event)">
+      <div class="drop-zone" id="sku-drop" onclick="document.getElementById('f-sku').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="skuDrop(event)">
         <div class="big">📊</div>
         <h3>Загрузите файл анализа SKU</h3>
-        <p>Данные сохранятся в Supabase<br>и будут доступны с любого устройства</p>
+        <p>Данные сохранятся в Supabase и будут доступны с любого устройства</p>
       </div>
       <input type="file" id="f-sku" accept=".xlsx,.xls" onchange="loadSKU(this)">
     </div>
     <div class="sku-body" id="sku-body">
       <div class="abc-cards" id="abc-cards"></div>
       <div class="sku-table-wrap">
-        <table class="sku-tbl">
-          <thead><tr>
-            <th>#</th>
-            <th onclick="sortBy('art')">Артикул ↕</th>
-            <th onclick="sortBy('abc')">ABC ↕</th>
-            <th onclick="sortBy('status')">Статус ↕</th>
-            <th onclick="sortBy('rev')">Выручка ↕</th>
-            <th>% выручки</th>
-            <th onclick="sortBy('so')">Sell out ↕</th>
-            <th>Закуплено</th><th>Продано</th>
-            <th onclick="sortBy('stock')">Остаток ↕</th>
-            <th>Дней до SO 60%</th>
-            <th onclick="sortBy('days0')">Дней до нуля ↕</th>
-            <th onclick="sortBy('spd')">Скор./день ↕</th>
-            <th>Скор. до 60%</th><th>Скор. после 60%</th>
-            <th>Скор. расчётная</th>
-            <th onclick="sortBy('order')">Заказ (база) ↕</th>
-            <th>План (дней)</th>
-            <th>Диапазон</th>
-          </tr></thead>
-          <tbody id="sku-tbody"></tbody>
-        </table>
+        <table class="sku-tbl"><thead><tr>
+          <th>#</th><th onclick="sortBy('art')">Артикул ↕</th><th onclick="sortBy('abc')">ABC ↕</th>
+          <th onclick="sortBy('status')">Статус ↕</th><th onclick="sortBy('rev')">Выручка ↕</th>
+          <th>% выр.</th><th onclick="sortBy('so')">Sell out ↕</th>
+          <th>Закуп.</th><th>Продано</th><th onclick="sortBy('stock')">Остаток ↕</th>
+          <th>Дн.до SO60%</th><th onclick="sortBy('days0')">Дн.до нуля ↕</th>
+          <th onclick="sortBy('spd')">Скор./день ↕</th><th>до 60%</th><th>после 60%</th>
+          <th>Расчётная</th><th onclick="sortBy('order')">Заказ ↕</th>
+          <th>План(дн)</th><th>Диапазон</th>
+        </tr></thead>
+        <tbody id="sku-tbody"></tbody></table>
       </div>
     </div>
   </div>
@@ -288,22 +238,16 @@ input[type=file]{display:none}
   <div class="page" id="page-dir">
     <div class="dir-page">
       <div class="dir-toolbar">
-        <h3 style="font-size:15px;font-weight:700;color:var(--text)">📋 Справочник артикулов</h3>
+        <h3 style="font-size:14px;font-weight:700;color:var(--text)">📋 Справочник артикулов</h3>
         <button class="btn-exp" onclick="document.getElementById('f-dir').click()">📂 Загрузить Excel</button>
         <input type="file" id="f-dir" accept=".xlsx,.xls" onchange="loadDirectory(this)">
-        <button class="btn-exp green" onclick="saveDirAll()">💾 Сохранить всё</button>
+        <button class="btn-exp green" onclick="saveDirAll()">💾 Сохранить</button>
         <button class="btn-exp" onclick="exportDirectory()">↓ Excel</button>
-        <span id="dir-count" style="font-size:11px;color:var(--muted);margin-left:auto"></span>
+        <span id="dir-count" style="font-size:10px;color:var(--muted);margin-left:auto"></span>
       </div>
-      <div style="overflow:auto;flex:1">
-        <table class="dir-tbl" id="dir-table">
-          <thead><tr>
-            <th>Артикул</th><th>Категория</th><th>Гендер</th>
-            <th>Возраст</th><th>Сезон</th><th>Бренд</th><th>Заметки</th>
-            <th></th>
-          </tr></thead>
-          <tbody id="dir-tbody"><tr><td colspan="8" class="no-data">Загрузите справочник или добавьте артикулы вручную</td></tr></tbody>
-        </table>
+      <div style="overflow:auto">
+        <table class="dir-tbl"><thead><tr><th>Артикул</th><th>Категория</th><th>Гендер</th><th>Возраст</th><th>Сезон</th><th>Бренд</th><th>Заметки</th><th></th></tr></thead>
+        <tbody id="dir-tbody"><tr><td colspan="8" class="no-data">Загрузите справочник или добавьте артикулы вручную</td></tr></tbody></table>
       </div>
     </div>
   </div>
@@ -311,726 +255,528 @@ input[type=file]{display:none}
   <!-- HISTORY -->
   <div class="page" id="page-hist">
     <div class="history-page">
-      <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;color:var(--text)">🕐 История загрузок</h3>
-      <div class="history-list" id="history-list"><div class="no-data">Нет сохранённых отчётов</div></div>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">🕐 История загрузок</h3>
+      <div class="history-list" id="history-list"><div class="no-data">Нет отчётов</div></div>
     </div>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="loading-overlay" id="loading"><div class="spinner"></div><div style="font-size:13px;color:var(--muted)" id="loading-txt">Загрузка...</div></div>
 
 <script>
-var SB_URL  = 'https://owmpecsbwhprirmkhnah.supabase.co';
-var SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93bXBlY3Nid2hwcmlybWtobmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjIxMDMsImV4cCI6MjA5NjgzODEwM30.6BSP3x6JIWrgm3yBbRlN_bNI_0uLnSMw5MkqawfRtd0';
-var SB_HDR  = { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY };
+var SB  = 'https://owmpecsbwhprirmkhnah.supabase.co';
+var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93bXBlY3Nid2hwcmlybWtobmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjIxMDMsImV4cCI6MjA5NjgzODEwM30.6BSP3x6JIWrgm3yBbRlN_bNI_0uLnSMw5MkqawfRtd0';
+var HDR = {'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY};
 
-var plData = [], selArt = null;
-var skuRaw = [], skuRows = [], skuFiltered = [];
-var skuPlans = {}, dirData = {}, activeReportId = null;
-var skuSortCol = 'rev', skuSortDir = -1;
+var plData=[],selArt=null;
+var skuRaw=[],skuRows=[],skuFiltered=[];
+var skuPlans={},dirData={},activeReportId=null;
+var skuSortCol='rev',skuSortDir=-1;
+var charts={};
 
-// ── SUPABASE HELPERS ─────────────────────────────────────
-async function sbGet(table, params) {
-  var url = SB_URL + '/rest/v1/' + table + '?' + (params || 'select=*');
-  var r = await fetch(url, { headers: SB_HDR });
-  return r.ok ? r.json() : [];
+// ── SB HELPERS ───────────────────────────────────────────
+async function sbGet(t,q){
+  try{var r=await fetch(SB+'/rest/v1/'+t+'?'+(q||'select=*'),{headers:HDR});return r.ok?r.json():[];}catch(e){return[];}
 }
-async function sbPost(table, body) {
-  var r = await fetch(SB_URL + '/rest/v1/' + table, {
-    method: 'POST', headers: Object.assign({}, SB_HDR, { 'Prefer': 'return=representation' }),
-    body: JSON.stringify(body)
-  });
-  return r.ok ? r.json() : null;
+async function sbPost(t,b){
+  try{var r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},HDR,{'Prefer':'return=representation'}),body:JSON.stringify(b)});return r.ok?r.json():null;}catch(e){return null;}
 }
-async function sbPatch(table, filter, body) {
-  var r = await fetch(SB_URL + '/rest/v1/' + table + '?' + filter, {
-    method: 'PATCH', headers: Object.assign({}, SB_HDR, { 'Prefer': 'return=representation' }),
-    body: JSON.stringify(body)
-  });
-  return r.ok ? r.json() : null;
+async function sbPatch(t,f,b){
+  try{var r=await fetch(SB+'/rest/v1/'+t+'?'+f,{method:'PATCH',headers:Object.assign({},HDR,{'Prefer':'return=representation'}),body:JSON.stringify(b)});return r.ok?r.json():null;}catch(e){return null;}
 }
-async function sbDelete(table, filter) {
-  await fetch(SB_URL + '/rest/v1/' + table + '?' + filter, { method: 'DELETE', headers: SB_HDR });
+async function sbDelete(t,f){
+  try{await fetch(SB+'/rest/v1/'+t+'?'+f,{method:'DELETE',headers:HDR});}catch(e){}
 }
-async function sbUpsert(table, body, onConflict) {
-  var r = await fetch(SB_URL + '/rest/v1/' + table + '?on_conflict=' + onConflict, {
-    method: 'POST', headers: Object.assign({}, SB_HDR, { 'Prefer': 'resolution=merge-duplicates,return=representation' }),
-    body: JSON.stringify(body)
-  });
-  return r.ok ? r.json() : null;
+async function sbUpsert(t,b,oc){
+  try{var r=await fetch(SB+'/rest/v1/'+t+'?on_conflict='+oc,{method:'POST',headers:Object.assign({},HDR,{'Prefer':'resolution=merge-duplicates,return=representation'}),body:JSON.stringify(b)});return r.ok?r.json():null;}catch(e){return null;}
 }
 
 // ── INIT ─────────────────────────────────────────────────
-async function init() {
-  try {
-    var r = await fetch(SB_URL + '/rest/v1/sku_reports?select=id&limit=1', { headers: SB_HDR });
-    if (r.ok) {
-      document.getElementById('sb-dot').className = 'sb-dot ok';
-      document.getElementById('sb-txt').textContent = 'Supabase ✓';
-    } else { throw new Error(); }
-  } catch(e) {
-    document.getElementById('sb-txt').textContent = 'Нет связи';
-  }
+async function init(){
+  showLoading('Подключение к Supabase...');
+  try{
+    var r=await fetch(SB+'/rest/v1/sku_reports?select=id&limit=1',{headers:HDR});
+    if(r.ok){document.getElementById('sb-dot').className='sb-dot ok';document.getElementById('sb-txt').textContent='Supabase ✓';}
+    else{throw new Error();}
+  }catch(e){document.getElementById('sb-txt').textContent='Нет связи';}
   await loadPlans();
   await loadDirFromDB();
+  // Автоматически загружаем последний отчёт
+  showLoading('Загрузка последнего отчёта...');
+  var reports=await sbGet('sku_reports','select=*&order=loaded_at.desc&limit=1');
+  if(Array.isArray(reports)&&reports.length){
+    await loadReportData(reports[0]);
+  }
+  hideLoading();
   await renderHistory();
 }
 
-// ── TAB SWITCH ───────────────────────────────────────────
-function showTab(tab) {
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  document.getElementById('t-' + tab).classList.add('active');
-  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-  document.getElementById('page-' + tab).classList.add('active');
-  if (tab === 'dash' && skuRows.length) { renderDashboard(); }
-  if (tab === 'hist') { renderHistory(); }
-  if (tab === 'dir')  { renderDirTable(); }
+function showLoading(txt){
+  document.getElementById('loading-txt').textContent=txt||'Загрузка...';
+  document.getElementById('loading').style.display='flex';
+}
+function hideLoading(){document.getElementById('loading').style.display='none';}
+
+// ── TAB ──────────────────────────────────────────────────
+function showTab(tab){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('t-'+tab).classList.add('active');
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-'+tab).classList.add('active');
+  if(tab==='dash'&&skuRows.length){renderDashboard();}
+  if(tab==='hist'){renderHistory();}
+  if(tab==='dir'){renderDirTable();}
 }
 
-// ── TOAST ────────────────────────────────────────────────
-function toast(msg, type) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show ' + (type || 'ok');
-  clearTimeout(el._t);
-  el._t = setTimeout(function() { el.className = 'toast'; }, 3000);
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show '+(type||'ok');
+  clearTimeout(el._t);el._t=setTimeout(function(){el.className='toast';},3000);
 }
 
 // ── PACKING LIST ─────────────────────────────────────────
-function loadPL(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var wb = XLSX.read(e.target.result, { type: 'array' });
-    var ws = wb.Sheets[wb.SheetNames[0]];
-    var rows = XLSX.utils.sheet_to_json(ws, { defval: null });
-    plData = processPL(rows);
+function loadPL(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var wb=XLSX.read(e.target.result,{type:'array'});
+    var ws=wb.Sheets[wb.SheetNames[0]];
+    var rows=XLSX.utils.sheet_to_json(ws,{defval:null});
+    plData=processPL(rows);
     renderArtList(plData);
-    document.getElementById('pl-label').textContent = file.name;
+    document.getElementById('pl-label').textContent=file.name;
     document.getElementById('pl-upload-btn').classList.add('loaded');
-    document.getElementById('pl-search').disabled = false;
-    document.getElementById('btn-exp-all').style.display = 'flex';
+    document.getElementById('pl-search').disabled=false;
+    document.getElementById('btn-exp-all').style.display='flex';
   };
   reader.readAsArrayBuffer(file);
 }
-function processPL(rows) {
-  var fixed = ['ITEM NO.','ITEM NO','DEVISION','DIVISION','Unnamed: 2','QTY','Unnamed: 26'];
-  var sample = rows[0] || {};
-  var allCols = Object.keys(sample);
-  var sizeCols = allCols.filter(function(c) { return fixed.indexOf(c) === -1; });
-  var catCol = allCols.find(function(c) { return ['DEVISION','DIVISION','Unnamed: 2'].indexOf(c) !== -1; });
-  var artCol = allCols.find(function(c) { return c === 'ITEM NO.'; });
-  var baseCol = allCols.find(function(c) { return c === 'ITEM NO'; });
-  var map = {};
-  rows.forEach(function(row, idx) {
-    var art = row[artCol] || row[baseCol] || ('ROW_' + idx);
-    if (!map[art]) { map[art] = { article: art, category: (row[catCol] || ''), sizes: {}, boxes: [] }; }
-    var entry = map[art], boxSizes = {};
-    sizeCols.forEach(function(sc) {
-      if (row[sc] && !isNaN(row[sc]) && Number(row[sc]) > 0) {
-        var qty = Number(row[sc]);
-        entry.sizes[sc] = (entry.sizes[sc] || 0) + qty;
-        boxSizes[sc] = qty;
+function processPL(rows){
+  var fixed=['ITEM NO.','ITEM NO','DEVISION','DIVISION','Unnamed: 2','QTY','Unnamed: 26'];
+  var sample=rows[0]||{};var allCols=Object.keys(sample);
+  var sizeCols=allCols.filter(function(c){return fixed.indexOf(c)===-1;});
+  var catCol=allCols.find(function(c){return['DEVISION','DIVISION','Unnamed: 2'].indexOf(c)!==-1;});
+  var artCol=allCols.find(function(c){return c==='ITEM NO.';});
+  var baseCol=allCols.find(function(c){return c==='ITEM NO';});
+  var map={};
+  rows.forEach(function(row,idx){
+    var art=row[artCol]||row[baseCol]||('ROW_'+idx);
+    if(!map[art]){map[art]={article:art,category:(row[catCol]||''),sizes:{},boxes:[]};}
+    var entry=map[art],boxSizes={};
+    sizeCols.forEach(function(sc){
+      if(row[sc]&&!isNaN(row[sc])&&Number(row[sc])>0){
+        var qty=Number(row[sc]);entry.sizes[sc]=(entry.sizes[sc]||0)+qty;boxSizes[sc]=qty;
       }
     });
-    var bq = Object.values(boxSizes).reduce(function(a,b){return a+b;},0);
-    if (bq > 0) { entry.boxes.push({ index: entry.boxes.length+1, sizes: boxSizes, qty: bq }); }
+    var bq=Object.values(boxSizes).reduce(function(a,b){return a+b;},0);
+    if(bq>0){entry.boxes.push({index:entry.boxes.length+1,sizes:boxSizes,qty:bq});}
   });
   return Object.values(map);
 }
-function renderArtList(data) {
-  var list = document.getElementById('art-list');
-  if (!data.length) { list.innerHTML = '<div class="no-data">Нет данных</div>'; return; }
-  list.innerHTML = data.map(function(item) {
-    var total = Object.values(item.sizes).reduce(function(a,b){return a+b;},0);
-    var id = eid(item.article);
-    return '<div class="art-item" onclick="selArticle(\'' + id + '\')" id="ai-' + id + '">' +
-      '<span class="art-code">' + item.article + '</span>' +
-      '<span class="art-qty">' + total + '</span></div>';
+function renderArtList(data){
+  var list=document.getElementById('art-list');
+  if(!data.length){list.innerHTML='<div class="no-data">Нет данных</div>';return;}
+  list.innerHTML=data.map(function(item){
+    var total=Object.values(item.sizes).reduce(function(a,b){return a+b;},0);
+    var id=eid(item.article);
+    return '<div class="art-item" onclick="selArticle(\''+id+'\')" id="ai-'+id+'"><span class="art-code">'+item.article+'</span><span class="art-qty">'+total+'</span></div>';
   }).join('');
 }
-function filterPL() {
-  var q = document.getElementById('pl-search').value.trim().toLowerCase();
-  renderArtList(q ? plData.filter(function(d){return d.article.toLowerCase().indexOf(q)!==-1;}) : plData);
+function filterPL(){
+  var q=document.getElementById('pl-search').value.trim().toLowerCase();
+  renderArtList(q?plData.filter(function(d){return d.article.toLowerCase().indexOf(q)!==-1;}):plData);
 }
-function selArticle(id) {
-  selArt = id;
+function selArticle(id){
+  selArt=id;
   document.querySelectorAll('.art-item').forEach(function(el){el.classList.remove('sel');});
-  var el = document.getElementById('ai-' + id);
-  if (el) { el.classList.add('sel'); }
-  var item = plData.find(function(d){return eid(d.article)===id;});
-  if (item) { renderDetail(item); }
+  var el=document.getElementById('ai-'+id);if(el){el.classList.add('sel');}
+  var item=plData.find(function(d){return eid(d.article)===id;});
+  if(item){renderDetail(item);}
 }
-var SIZE_ORDER = ['FREE','XXS','XS','S','M','L','XL','XXL','3XL','4XL','5XL','4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','12.5','13','13.5','14','14.5','15'];
-function sortedSizes(sizes) {
+var SZ=['FREE','XXS','XS','S','M','L','XL','XXL','3XL','4XL','5XL','4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','12.5','13','13.5','14','14.5','15'];
+function sortedSizes(sizes){
   return Object.entries(sizes).sort(function(a,b){
-    var ai=SIZE_ORDER.indexOf(String(a[0])),bi=SIZE_ORDER.indexOf(String(b[0]));
+    var ai=SZ.indexOf(String(a[0])),bi=SZ.indexOf(String(b[0]));
     if(ai===-1&&bi===-1)return String(a[0]).localeCompare(String(b[0]));
-    if(ai===-1)return 1; if(bi===-1)return -1; return ai-bi;
+    if(ai===-1)return 1;if(bi===-1)return-1;return ai-bi;
   });
 }
-function renderDetail(item) {
-  var total = Object.values(item.sizes).reduce(function(a,b){return a+b;},0);
-  var rows = sortedSizes(item.sizes).map(function(e,i){
-    return '<tr><td style="color:var(--muted);font-size:11px">'+(i+1)+'</td>' +
-      '<td><span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent2)">'+item.article+'</span></td>' +
-      '<td><span class="sz-badge">'+e[0]+'</span></td>' +
-      '<td class="qty-cell">'+e[1]+'</td></tr>';
+function renderDetail(item){
+  var total=Object.values(item.sizes).reduce(function(a,b){return a+b;},0);
+  var rows=sortedSizes(item.sizes).map(function(e,i){
+    return '<tr><td style="color:var(--muted);font-size:10px">'+(i+1)+'</td><td><span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent2)">'+item.article+'</span></td><td><span class="sz-badge">'+e[0]+'</span></td><td class="qty-cell">'+e[1]+'</td></tr>';
   }).join('');
-  document.getElementById('pl-detail').innerHTML =
-    '<div><div class="detail-title">'+item.article+'</div>' +
-    '<div class="tags"><span class="tag tag-cat">'+(item.category||'—')+'</span>' +
-    '<span class="tag tag-box">'+item.boxes.length+' коробок</span>' +
-    '<span class="tag tag-tot">Итого: '+total+' шт.</span></div>' +
-    '<div class="det-actions">' +
-    '<button class="btn-exp" onclick="exportOne()">↓ Артикул</button>' +
-    '<button class="btn-exp green" onclick="exportAll()">↓ Весь список</button></div>' +
-    '<table class="flat-table"><thead><tr><th>#</th><th>Артикул</th><th>Размер</th><th>Кол-во</th></tr></thead>' +
-    '<tbody>'+rows+'</tbody>' +
-    '<tfoot><tr><td colspan="3" style="text-align:right;font-weight:700;color:var(--muted);font-size:11px;padding:9px 12px">ИТОГО</td>' +
-    '<td class="qty-cell" style="font-size:17px;color:var(--accent2)">'+total+'</td></tr></tfoot></table></div>';
+  document.getElementById('pl-detail').innerHTML=
+    '<div><div class="detail-title">'+item.article+'</div>'+
+    '<div class="tags"><span class="tag tag-cat">'+(item.category||'—')+'</span><span class="tag tag-box">'+item.boxes.length+' коробок</span><span class="tag tag-tot">Итого: '+total+' шт.</span></div>'+
+    '<div class="det-actions"><button class="btn-exp" onclick="exportOne()">↓ Артикул</button><button class="btn-exp green" onclick="exportAll()">↓ Весь список</button></div>'+
+    '<table class="flat-table"><thead><tr><th>#</th><th>Артикул</th><th>Размер</th><th>Кол-во</th></tr></thead><tbody>'+rows+'</tbody>'+
+    '<tfoot><tr><td colspan="3" style="text-align:right;font-weight:700;color:var(--muted);font-size:10px;padding:8px 11px">ИТОГО</td><td class="qty-cell" style="font-size:16px;color:var(--accent2)">'+total+'</td></tr></tfoot></table></div>';
 }
-function exportOne() {
-  if (!selArt) return;
-  var item = plData.find(function(d){return eid(d.article)===selArt;});
-  if (!item) return;
+function exportOne(){
+  if(!selArt)return;
+  var item=plData.find(function(d){return eid(d.article)===selArt;});if(!item)return;
   var data=[['Артикул','Размер','кол-во']];
   sortedSizes(item.sizes).forEach(function(e){data.push([item.article,e[0],e[1]]);});
-  dlXlsx(data, item.article);
+  dlXlsx(data,item.article);
 }
-function exportAll() {
-  if (!plData.length) return;
+function exportAll(){
+  if(!plData.length)return;
   var data=[['Артикул','Размер','кол-во']];
   plData.forEach(function(item){sortedSizes(item.sizes).forEach(function(e){data.push([item.article,e[0],e[1]]);});});
-  dlXlsx(data, 'packing-list-full');
+  dlXlsx(data,'packing-list-full');
 }
 
 // ── SKU ──────────────────────────────────────────────────
-function skuDrop(e) {
-  e.preventDefault();
-  document.getElementById('sku-drop').classList.remove('drag');
-  if (e.dataTransfer.files[0]) { readSKU(e.dataTransfer.files[0]); }
-}
-function loadSKU(input) { if (input.files[0]) { readSKU(input.files[0]); } }
-
-function readSKU(file) {
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var wb = XLSX.read(e.target.result, { type: 'array' });
-    var ws = wb.Sheets[wb.SheetNames[0]];
-    var rows = XLSX.utils.sheet_to_json(ws, { defval: 0 });
-    skuRaw = rows.filter(function(r){
-      var a = String(r['ITEM NO.']||'').trim();
-      return a && a.toLowerCase() !== 'total' && a !== '0';
-    });
-    // Save to Supabase
-    var repName = file.name.replace('.xlsx','').replace('.xls','');
-    await saveReport(repName);
-    document.getElementById('sku-upload').style.display = 'none';
-    document.getElementById('sku-body').style.display = 'flex';
-    document.getElementById('sku-top').style.display = 'block';
-    recalc();
-    updateFilterSelects();
-    toast('Файл загружен и сохранён ✓');
+function skuDrop(e){e.preventDefault();document.getElementById('sku-drop').classList.remove('drag');if(e.dataTransfer.files[0]){readSKU(e.dataTransfer.files[0]);}}
+function loadSKU(input){if(input.files[0]){readSKU(input.files[0]);}}
+function readSKU(file){
+  var reader=new FileReader();
+  reader.onload=function(e){
+    showLoading('Обработка файла...');
+    try{
+      var wb=XLSX.read(e.target.result,{type:'array'});
+      var ws=wb.Sheets[wb.SheetNames[0]];
+      var rows=XLSX.utils.sheet_to_json(ws,{defval:0});
+      skuRaw=rows.filter(function(r){var a=String(r['ITEM NO.']||'').trim();return a&&a.toLowerCase()!=='total'&&a!=='0';});
+      var repName=file.name.replace(/\.xlsx?$/,'');
+      saveReportAsync(repName);
+    }catch(err){hideLoading();toast('Ошибка чтения файла','err');}
   };
   reader.readAsArrayBuffer(file);
 }
-
-async function saveReport(name) {
-  var rep = await sbPost('sku_reports', {
-    name: name,
-    stores_now: gn('s-now'), stores_future: gn('s-fut'),
-    period_days: gn('s-per'), buffer_pct: gn('s-buf'),
-    abc_a: gn('s-a'), abc_b: gn('s-b')
-  });
-  if (rep && rep[0]) {
-    activeReportId = rep[0].id;
-    // Save rows in batches of 100
-    var batch = [];
-    skuRaw.forEach(function(r) {
-      batch.push({
-        report_id: activeReportId,
-        article: String(r['ITEM NO.']),
-        revenue: r['Сумма продаж']||0,
-        pct_revenue: r['% от продаж']||0,
-        bought: r['Закуплено']||0,
-        sold: r['Продано']||0,
-        stock: r['Остаток']||0,
-        sellout: r['Sell out']||0,
-        days_to_60: r['Прошло дней до SO 60%']||0,
-        proj_days_60: r['Проекция дней до SO 60%']||0,
-        proj_days_0: r['Проекция дней до нуля']||0,
-        spd_avg: r['Ср скорость продаж в день']||0,
-        spd_bef: r['Скорость продаж (до 60% SO)']||0,
-        spd_aft: r['Скорость продаж (после SO 60%)']||0
-      });
+async function saveReportAsync(name){
+  showLoading('Сохранение в Supabase...');
+  var rep=await sbPost('sku_reports',{name:name,stores_now:gn('s-now'),stores_future:gn('s-fut'),period_days:gn('s-per'),buffer_pct:gn('s-buf'),abc_a:gn('s-a'),abc_b:gn('s-b')});
+  if(rep&&rep[0]){
+    activeReportId=rep[0].id;
+    var batch=skuRaw.map(function(r){
+      return{report_id:activeReportId,article:String(r['ITEM NO.']),revenue:r['Сумма продаж']||0,pct_revenue:r['% от продаж']||0,bought:r['Закуплено']||0,sold:r['Продано']||0,stock:r['Остаток']||0,sellout:r['Sell out']||0,days_to_60:r['Прошло дней до SO 60%']||0,proj_days_60:r['Проекция дней до SO 60%']||0,proj_days_0:r['Проекция дней до нуля']||0,spd_avg:r['Ср скорость продаж в день']||0,spd_bef:r['Скорость продаж (до 60% SO)']||0,spd_aft:r['Скорость продаж (после SO 60%)']||0};
     });
-    for (var i=0; i<batch.length; i+=100) {
-      await sbPost('sku_data', batch.slice(i, i+100));
-    }
+    for(var i=0;i<batch.length;i+=100){await sbPost('sku_data',batch.slice(i,i+100));}
   }
+  showSkuUI();
+  hideLoading();
+  toast('Файл загружен и сохранён ✓');
+  renderHistory();
+}
+function showSkuUI(){
+  document.getElementById('sku-upload').style.display='none';
+  document.getElementById('sku-body').style.display='flex';
+  document.getElementById('sku-top').style.display='block';
+  recalc();
+  updateFilterSelects();
 }
 
-async function loadPlans() {
-  var rows = await sbGet('sku_plans');
-  if (Array.isArray(rows)) {
-    rows.forEach(function(r){ skuPlans['p_'+r.article] = r.plan_days; });
-  }
+async function loadPlans(){
+  var rows=await sbGet('sku_plans');
+  if(Array.isArray(rows)){rows.forEach(function(r){skuPlans['p_'+r.article]=r.plan_days;});}
 }
-
-async function saveSettings() {
-  if (!activeReportId) return;
-  await sbPatch('sku_reports', 'id=eq.'+activeReportId, {
-    stores_now: gn('s-now'), stores_future: gn('s-fut'),
-    period_days: gn('s-per'), buffer_pct: gn('s-buf'),
-    abc_a: gn('s-a'), abc_b: gn('s-b')
-  });
+async function saveSettings(){
+  if(!activeReportId)return;
+  await sbPatch('sku_reports','id=eq.'+activeReportId,{stores_now:gn('s-now'),stores_future:gn('s-fut'),period_days:gn('s-per'),buffer_pct:gn('s-buf'),abc_a:gn('s-a'),abc_b:gn('s-b')});
   toast('Настройки сохранены ✓');
 }
+function gn(id){return parseFloat(document.getElementById(id).value)||0;}
 
-function gn(id) { return parseFloat(document.getElementById(id).value) || 0; }
-
-function recalc() {
-  if (!skuRaw.length) return;
-  var sNow=gn('s-now')||1, sFut=gn('s-fut')||1, per=gn('s-per')||60;
-  var buf=gn('s-buf')/100, limA=gn('s-a')/100, limB=gn('s-b')/100;
-  var filtered = skuRaw.filter(function(r){return (r['Сумма продаж']||0)>0;});
-  filtered.sort(function(a,b){return (b['Сумма продаж']||0)-(a['Сумма продаж']||0);});
-  var totalRev = filtered.reduce(function(s,r){return s+(r['Сумма продаж']||0);},0);
-  var cum = 0;
-  skuRows = filtered.map(function(r,i){
-    var rev=r['Сумма продаж']||0, sellout=r['Sell out']||0, stock=r['Остаток']||0;
-    var bought=r['Закуплено']||0, sold=r['Продано']||0;
+function recalc(){
+  if(!skuRaw.length)return;
+  var sNow=gn('s-now')||1,sFut=gn('s-fut')||1,per=gn('s-per')||60;
+  var buf=gn('s-buf')/100,limA=gn('s-a')/100,limB=gn('s-b')/100;
+  var filtered=skuRaw.filter(function(r){return(r['Сумма продаж']||0)>0;});
+  filtered.sort(function(a,b){return(b['Сумма продаж']||0)-(a['Сумма продаж']||0);});
+  var totalRev=filtered.reduce(function(s,r){return s+(r['Сумма продаж']||0);},0);
+  var cum=0;
+  skuRows=filtered.map(function(r,i){
+    var rev=r['Сумма продаж']||0,so=r['Sell out']||0,stock=r['Остаток']||0;
+    var bought=r['Закуплено']||0,sold=r['Продано']||0;
     var spdAvg=r['Ср скорость продаж в день']||0;
     var spdBef=r['Скорость продаж (до 60% SO)']||0;
     var spdAft=r['Скорость продаж (после SO 60%)']||0;
-    var daysTo60=r['Прошло дней до SO 60%']||0, days0=r['Проекция дней до нуля']||0;
-    cum += rev/totalRev;
-    var abc = cum<=limA?'A':(cum<=limB?'B':'C');
-    var spdCalc = sellout<0.6 ? (spdBef>0?spdBef:spdAvg) : (spdAvg>0?spdAvg:spdAft);
-    var status = (sellout>=0.9||(days0>0&&days0<per*0.3))?'urgent':((sellout>=0.7||(days0>0&&days0<per*0.6))?'watch':'ok');
-    var ratio = sFut/sNow;
-    var manualDays = skuPlans.hasOwnProperty('p_'+r['ITEM NO.']) ? skuPlans['p_'+r['ITEM NO.']] : null;
-    var planDays = manualDays !== null ? manualDays : per;
-    var need = spdCalc * ratio * planDays;
-    var base = Math.max(0, Math.round(need - stock));
-    var dir = dirData[r['ITEM NO.']] || {};
-    return {
-      i:i+1, art:r['ITEM NO.'], abc:abc, status:status,
-      rev:rev, pctRev:rev/totalRev, cum:cum,
-      sellout:sellout, bought:bought, sold:sold, stock:stock,
-      daysTo60:daysTo60, days0:days0,
-      spdAvg:spdAvg, spdBef:spdBef, spdAft:spdAft, spdCalc:spdCalc,
-      base:base, low:Math.round(base*(1-buf)), high:Math.round(base*(1+buf)),
-      manualDays:manualDays,
-      category:dir.category||'', gender:dir.gender||'', age_group:dir.age_group||''
-    };
+    var daysTo60=r['Прошло дней до SO 60%']||0,days0=r['Проекция дней до нуля']||0;
+    cum+=rev/totalRev;
+    var abc=cum<=limA?'A':(cum<=limB?'B':'C');
+    var spdCalc=so<0.6?(spdBef>0?spdBef:spdAvg):(spdAvg>0?spdAvg:spdAft);
+    var status=(so>=0.9||(days0>0&&days0<per*0.3))?'urgent':((so>=0.7||(days0>0&&days0<per*0.6))?'watch':'ok');
+    var ratio=sFut/sNow;
+    var manDays=skuPlans.hasOwnProperty('p_'+r['ITEM NO.'])?skuPlans['p_'+r['ITEM NO.']]:null;
+    var planDays=manDays!==null?manDays:per;
+    var need=spdCalc*ratio*planDays;
+    var base=Math.max(0,Math.round(need-stock));
+    var dir=dirData[r['ITEM NO.']]||{};
+    return{i:i+1,art:r['ITEM NO.'],abc:abc,status:status,rev:rev,pctRev:rev/totalRev,cum:cum,sellout:so,bought:bought,sold:sold,stock:stock,daysTo60:daysTo60,days0:days0,spdAvg:spdAvg,spdBef:spdBef,spdAft:spdAft,spdCalc:spdCalc,base:base,low:Math.round(base*(1-buf)),high:Math.round(base*(1+buf)),manDays:manDays,category:dir.category||'',gender:dir.gender||'',age_group:dir.age_group||''};
   });
   applyFilters();
   renderAbcCards(totalRev);
 }
-
-function applyFilters() {
-  var q  = (document.getElementById('f-search').value||'').toLowerCase();
-  var fa = document.getElementById('f-abc').value;
-  var fs = document.getElementById('f-status').value;
-  var fc = document.getElementById('f-cat').value;
-  var fg = document.getElementById('f-gender').value;
-  var fag= document.getElementById('f-age').value;
-  skuFiltered = skuRows.filter(function(r){
-    if (q  && r.art.toLowerCase().indexOf(q)===-1) return false;
-    if (fa && r.abc !== fa) return false;
-    if (fs && r.status !== fs) return false;
-    if (fc && r.category !== fc) return false;
-    if (fg && r.gender !== fg) return false;
-    if (fag && r.age_group !== fag) return false;
+function applyFilters(){
+  var q=(document.getElementById('f-search').value||'').toLowerCase();
+  var fa=document.getElementById('f-abc').value;
+  var fs=document.getElementById('f-status').value;
+  var fc=document.getElementById('f-cat').value;
+  var fg=document.getElementById('f-gender').value;
+  var fag=document.getElementById('f-age').value;
+  skuFiltered=skuRows.filter(function(r){
+    if(q&&r.art.toLowerCase().indexOf(q)===-1)return false;
+    if(fa&&r.abc!==fa)return false;
+    if(fs&&r.status!==fs)return false;
+    if(fc&&r.category!==fc)return false;
+    if(fg&&r.gender!==fg)return false;
+    if(fag&&r.age_group!==fag)return false;
     return true;
   });
-  document.getElementById('filter-count').textContent = 'Показано: ' + skuFiltered.length + ' из ' + skuRows.length;
+  document.getElementById('filter-count').textContent='Показано: '+skuFiltered.length+' из '+skuRows.length;
   renderSKU();
 }
-
-function updateFilterSelects() {
-  var cats={}, genders={}, ages={};
-  skuRows.forEach(function(r){
-    if(r.category) cats[r.category]=1;
-    if(r.gender) genders[r.gender]=1;
-    if(r.age_group) ages[r.age_group]=1;
-  });
-  function fill(id, obj) {
-    var sel=document.getElementById(id);
-    var cur=sel.value;
-    sel.innerHTML='<option value="">Все</option>';
-    Object.keys(obj).sort().forEach(function(v){ sel.innerHTML+='<option>'+(v)+'</option>'; });
-    sel.value=cur;
-  }
-  fill('f-cat',cats); fill('f-gender',genders); fill('f-age',ages);
+function updateFilterSelects(){
+  var cats={},genders={},ages={};
+  skuRows.forEach(function(r){if(r.category)cats[r.category]=1;if(r.gender)genders[r.gender]=1;if(r.age_group)ages[r.age_group]=1;});
+  function fill(id,obj){var s=document.getElementById(id),cur=s.value;s.innerHTML='<option value="">Все</option>';Object.keys(obj).sort().forEach(function(v){s.innerHTML+='<option>'+v+'</option>';});s.value=cur;}
+  fill('f-cat',cats);fill('f-gender',genders);fill('f-age',ages);
 }
-
-function sortBy(col) {
-  if (skuSortCol===col) { skuSortDir*=-1; } else { skuSortCol=col; skuSortDir=-1; }
+function sortBy(col){
+  if(skuSortCol===col){skuSortDir*=-1;}else{skuSortCol=col;skuSortDir=-1;}
   var d=skuSortDir;
   skuFiltered.sort(function(a,b){
-    if(col==='art')    return d*a.art.localeCompare(b.art);
-    if(col==='abc')    return d*a.abc.localeCompare(b.abc);
+    if(col==='art')return d*a.art.localeCompare(b.art);
+    if(col==='abc')return d*a.abc.localeCompare(b.abc);
     if(col==='status'){var o={urgent:0,watch:1,ok:2};return d*(o[a.status]-o[b.status]);}
-    if(col==='rev')    return d*(a.rev-b.rev);
-    if(col==='so')     return d*(a.sellout-b.sellout);
-    if(col==='stock')  return d*(a.stock-b.stock);
-    if(col==='days0')  return d*(a.days0-b.days0);
-    if(col==='spd')    return d*(a.spdAvg-b.spdAvg);
-    if(col==='order')  return d*(a.base-b.base);
+    if(col==='rev')return d*(a.rev-b.rev);
+    if(col==='so')return d*(a.sellout-b.sellout);
+    if(col==='stock')return d*(a.stock-b.stock);
+    if(col==='days0')return d*(a.days0-b.days0);
+    if(col==='spd')return d*(a.spdAvg-b.spdAvg);
+    if(col==='order')return d*(a.base-b.base);
     return 0;
   });
   renderSKU();
 }
-
-function statusBadge(s) {
-  if(s==='urgent') return '<span style="background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800">🔴 Срочно</span>';
-  if(s==='watch')  return '<span style="background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800">🟡 Следить</span>';
-  return '<span style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800">🟢 Ок</span>';
+function sBadge(s){
+  if(s==='urgent')return'<span style="background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800">🔴 Срочно</span>';
+  if(s==='watch')return'<span style="background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800">🟡 Следить</span>';
+  return'<span style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800">🟢 Ок</span>';
 }
-
-function renderSKU() {
-  var per=gn('s-per')||60, html='';
+function renderSKU(){
+  var per=gn('s-per')||60,html='';
   for(var i=0;i<skuFiltered.length;i++){
     var r=skuFiltered[i];
-    var d0s = r.days0>0&&r.days0<per*0.3?'color:#f87171;font-weight:700':(r.days0>0&&r.days0<per*0.6?'color:#fbbf24':'');
-    var pv = r.manualDays!==null?r.manualDays:'';
-    var pm = r.manualDays!==null?' <span style="font-size:9px;color:var(--yellow)">✏️</span>':'';
-    html+='<tr>' +
-      '<td style="color:var(--muted);font-size:10px">'+r.i+'</td>' +
-      '<td style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent2)">'+r.art+'</td>' +
-      '<td><span class="abc-'+r.abc+'">'+r.abc+'</span></td>' +
-      '<td>'+statusBadge(r.status)+'</td>' +
-      '<td>'+fmtRev(r.rev)+'</td>' +
-      '<td style="color:var(--muted)">'+(r.pctRev*100).toFixed(2)+'%</td>' +
-      '<td style="color:'+soColor(r.sellout)+';font-weight:700">'+(r.sellout*100).toFixed(1)+'%</td>' +
-      '<td style="color:var(--muted)">'+(r.bought||'—')+'</td>' +
-      '<td style="color:var(--muted)">'+(r.sold||'—')+'</td>' +
-      '<td style="font-weight:600">'+r.stock+'</td>' +
-      '<td style="color:var(--muted)">'+(r.daysTo60||'—')+'</td>' +
-      '<td style="'+d0s+'">'+(r.days0||'—')+'</td>' +
-      '<td>'+r.spdAvg.toFixed(3)+'</td>' +
-      '<td style="color:var(--green)">'+(r.spdBef?r.spdBef.toFixed(3):'—')+'</td>' +
-      '<td style="color:var(--muted)">'+(r.spdAft?r.spdAft.toFixed(3):'—')+'</td>' +
-      '<td style="color:var(--yellow);font-weight:700">'+r.spdCalc.toFixed(3)+'</td>' +
-      '<td class="c-base" style="font-size:14px">'+r.base+pm+'</td>' +
-      '<td><input class="plan-inp" type="number" min="0" placeholder="'+per+' дн" value="'+pv+'" onchange="setPlan(\''+r.art.replace(/'/g,"\\'")+ '\',this.value)"></td>' +
-      '<td><span class="c-min">'+r.low+'</span> — <span class="c-max">'+r.high+'</span></td>' +
+    var d0s=r.days0>0&&r.days0<per*0.3?'color:#f87171;font-weight:700':(r.days0>0&&r.days0<per*0.6?'color:#fbbf24':'');
+    var pv=r.manDays!==null?r.manDays:'';
+    var pm=r.manDays!==null?' <span style="font-size:9px;color:var(--yellow)">✏️</span>':'';
+    html+='<tr>'+
+      '<td style="color:var(--muted);font-size:10px">'+r.i+'</td>'+
+      '<td style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent2)">'+r.art+'</td>'+
+      '<td><span class="abc-'+r.abc+'">'+r.abc+'</span></td>'+
+      '<td>'+sBadge(r.status)+'</td>'+
+      '<td>'+fmtRev(r.rev)+'</td>'+
+      '<td style="color:var(--muted)">'+(r.pctRev*100).toFixed(2)+'%</td>'+
+      '<td style="color:'+soColor(r.sellout)+';font-weight:700">'+(r.sellout*100).toFixed(1)+'%</td>'+
+      '<td style="color:var(--muted)">'+(r.bought||'—')+'</td>'+
+      '<td style="color:var(--muted)">'+(r.sold||'—')+'</td>'+
+      '<td style="font-weight:600">'+r.stock+'</td>'+
+      '<td style="color:var(--muted)">'+(r.daysTo60||'—')+'</td>'+
+      '<td style="'+d0s+'">'+(r.days0||'—')+'</td>'+
+      '<td>'+r.spdAvg.toFixed(3)+'</td>'+
+      '<td style="color:var(--green)">'+(r.spdBef?r.spdBef.toFixed(3):'—')+'</td>'+
+      '<td style="color:var(--muted)">'+(r.spdAft?r.spdAft.toFixed(3):'—')+'</td>'+
+      '<td style="color:var(--yellow);font-weight:700">'+r.spdCalc.toFixed(3)+'</td>'+
+      '<td class="c-base" style="font-size:13px">'+r.base+pm+'</td>'+
+      '<td><input class="plan-inp" type="number" min="0" placeholder="'+per+' дн" value="'+pv+'" onchange="setPlan(\''+r.art.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\',this.value)"></td>'+
+      '<td><span class="c-min">'+r.low+'</span> — <span class="c-max">'+r.high+'</span></td>'+
       '</tr>';
   }
-  document.getElementById('sku-tbody').innerHTML = html || '<tr><td colspan="19" class="no-data">Нет данных по фильтрам</td></tr>';
+  document.getElementById('sku-tbody').innerHTML=html||'<tr><td colspan="19" class="no-data">Нет данных</td></tr>';
 }
-
-async function setPlan(art, val) {
-  var key = 'p_'+art;
-  var days = val===''?null:parseInt(val);
-  if (days===null) { delete skuPlans[key]; } else { skuPlans[key]=days; }
-  await sbUpsert('sku_plans', { article: art, plan_days: days, updated_at: new Date().toISOString() }, 'article');
+async function setPlan(art,val){
+  var key='p_'+art;
+  var days=val===''?null:parseInt(val);
+  if(days===null){delete skuPlans[key];}else{skuPlans[key]=days;}
+  await sbUpsert('sku_plans',{article:art,plan_days:days,updated_at:new Date().toISOString()},'article');
   recalc();
 }
-
-function renderAbcCards(totalRev) {
+function renderAbcCards(totalRev){
   var groups={A:[],B:[],C:[]};
   skuRows.forEach(function(r){groups[r.abc].push(r);});
   var urgAll=skuRows.filter(function(r){return r.status==='urgent';}).length;
   var wchAll=skuRows.filter(function(r){return r.status==='watch';}).length;
   var colors={A:'var(--green)',B:'var(--yellow)',C:'var(--muted)'};
-  var html='<div class="abc-card" style="border-color:rgba(248,113,113,.3)">' +
-    '<div class="abc-card-title" style="color:#f87171">Внимание</div>' +
-    '<div class="abc-card-row"><span>🔴 Срочно</span><span style="color:#f87171">'+urgAll+'</span></div>' +
-    '<div class="abc-card-row"><span>🟡 Следить</span><span style="color:#fbbf24">'+wchAll+'</span></div>' +
+  var html='<div class="abc-card" style="border-color:rgba(248,113,113,.3)"><div class="abc-card-title" style="color:#f87171">Внимание</div>'+
+    '<div class="abc-card-row"><span>🔴 Срочно</span><span style="color:#f87171">'+urgAll+'</span></div>'+
+    '<div class="abc-card-row"><span>🟡 Следить</span><span style="color:#fbbf24">'+wchAll+'</span></div>'+
     '<div class="abc-card-row"><span>🟢 Ок</span><span style="color:#34d399">'+(skuRows.length-urgAll-wchAll)+'</span></div></div>';
   ['A','B','C'].forEach(function(g){
     var items=groups[g];
     var gRev=items.reduce(function(s,r){return s+r.rev;},0);
     var gOrd=items.reduce(function(s,r){return s+r.base;},0);
     var urg=items.filter(function(r){return r.status==='urgent';}).length;
-    html+='<div class="abc-card"><div class="abc-card-title" style="color:'+colors[g]+'">Группа '+g+'</div>' +
-      '<div class="abc-card-row"><span>Артикулов</span><span>'+items.length+'</span></div>' +
-      '<div class="abc-card-row"><span>Выручка</span><span>'+fmtRev(gRev)+'</span></div>' +
-      '<div class="abc-card-row"><span>% выручки</span><span>'+(totalRev>0?(gRev/totalRev*100).toFixed(1)+'%':'—')+'</span></div>' +
-      '<div class="abc-card-row"><span>Заказ (база)</span><span style="color:var(--accent2)">'+gOrd+'</span></div>' +
+    html+='<div class="abc-card"><div class="abc-card-title" style="color:'+colors[g]+'">Группа '+g+'</div>'+
+      '<div class="abc-card-row"><span>Артикулов</span><span>'+items.length+'</span></div>'+
+      '<div class="abc-card-row"><span>Выручка</span><span>'+fmtRev(gRev)+'</span></div>'+
+      '<div class="abc-card-row"><span>% выручки</span><span>'+(totalRev>0?(gRev/totalRev*100).toFixed(1)+'%':'—')+'</span></div>'+
+      '<div class="abc-card-row"><span>Заказ (база)</span><span style="color:var(--accent2)">'+gOrd+'</span></div>'+
       (urg>0?'<div class="abc-card-row"><span>🔴 Срочно</span><span style="color:#f87171">'+urg+'</span></div>':'')+
       '</div>';
   });
-  document.getElementById('abc-cards').innerHTML = html;
+  document.getElementById('abc-cards').innerHTML=html;
 }
-
-function exportSKU() {
-  if (!skuFiltered.length) return;
+function exportSKU(){
+  if(!skuFiltered.length)return;
   var buf=gn('s-buf'),per=gn('s-per'),sFut=gn('s-fut'),sNow=gn('s-now');
-  var data=[['№','Артикул','ABC','Статус','Выручка','% выручки','Sell out%','Закуплено','Продано','Остаток','Дней до SO 60%','Дней до нуля','Скор.ср','Скор.до60%','Скор.после60%','Скор.расч','Заказ ('+sFut+'м/'+sNow+'м '+per+'д)','План(дн)','Диап.-'+buf+'%','Диап.+'+buf+'%']];
+  var data=[['№','Артикул','ABC','Статус','Выручка','%выр','Sell out%','Закуп','Продано','Остаток','Дн.SO60%','Дн.нуля','Скор.ср','Скор.до60','Скор.после60','Скор.расч','Заказ('+sFut+'м/'+sNow+'м '+per+'д)','План(дн)','Диап.-'+buf+'%','Диап.+'+buf+'%']];
   var sm={urgent:'Срочно',watch:'Следить',ok:'Ок'};
-  skuFiltered.forEach(function(r){
-    data.push([r.i,r.art,r.abc,sm[r.status],+r.rev.toFixed(2),+(r.pctRev*100).toFixed(4),+(r.sellout*100).toFixed(1),r.bought,r.sold,r.stock,r.daysTo60||0,r.days0||0,+r.spdAvg.toFixed(4),+r.spdBef.toFixed(4),+r.spdAft.toFixed(4),+r.spdCalc.toFixed(4),r.base,r.manualDays||'',r.low,r.high]);
-  });
+  skuFiltered.forEach(function(r){data.push([r.i,r.art,r.abc,sm[r.status],+r.rev.toFixed(2),+(r.pctRev*100).toFixed(4),+(r.sellout*100).toFixed(1),r.bought,r.sold,r.stock,r.daysTo60||0,r.days0||0,+r.spdAvg.toFixed(4),+r.spdBef.toFixed(4),+r.spdAft.toFixed(4),+r.spdCalc.toFixed(4),r.base,r.manDays||'',r.low,r.high]);});
   dlXlsx(data,'sku-analysis');
 }
 
 // ── DASHBOARD ────────────────────────────────────────────
-function renderDashboard() {
-  if (!skuRows.length) return;
-  var totalRev = skuRows.reduce(function(s,r){return s+r.rev;},0);
-  var totalOrder = skuRows.reduce(function(s,r){return s+r.base;},0);
-  var urgent = skuRows.filter(function(r){return r.status==='urgent';}).length;
-  var avgSO = skuRows.reduce(function(s,r){return s+r.sellout;},0)/skuRows.length;
-
-  // Group by category
-  var cats={}, genders={}, ages={};
+function renderDashboard(){
+  if(!skuRows.length)return;
+  Object.values(charts).forEach(function(c){try{c.destroy();}catch(e){}});
+  charts={};
+  var totalRev=skuRows.reduce(function(s,r){return s+r.rev;},0);
+  var totalOrder=skuRows.reduce(function(s,r){return s+r.base;},0);
+  var urgent=skuRows.filter(function(r){return r.status==='urgent';}).length;
+  var avgSO=skuRows.reduce(function(s,r){return s+r.sellout;},0)/skuRows.length;
+  var cats={},genders={},ages={};
   skuRows.forEach(function(r){
-    var c=r.category||'Без категории';
-    if(!cats[c]){cats[c]={rev:0,order:0,cnt:0};}
-    cats[c].rev+=r.rev; cats[c].order+=r.base; cats[c].cnt++;
-    var g=r.gender||'Не указан';
-    if(!genders[g]){genders[g]={rev:0,cnt:0};}
-    genders[g].rev+=r.rev; genders[g].cnt++;
-    var a=r.age_group||'Не указан';
-    if(!ages[a]){ages[a]={rev:0,cnt:0};}
-    ages[a].rev+=r.rev; ages[a].cnt++;
+    var c=r.category||'Без категории';if(!cats[c]){cats[c]={rev:0,order:0,cnt:0};}cats[c].rev+=r.rev;cats[c].order+=r.base;cats[c].cnt++;
+    var g=r.gender||'Не указан';if(!genders[g]){genders[g]={rev:0};}genders[g].rev+=r.rev;
+    var a=r.age_group||'Не указан';if(!ages[a]){ages[a]={rev:0};}ages[a].rev+=r.rev;
   });
-
-  var catSorted = Object.entries(cats).sort(function(a,b){return b[1].rev-a[1].rev;}).slice(0,10);
-  var genEntries = Object.entries(genders).sort(function(a,b){return b[1].rev-a[1].rev;});
-  var ageEntries = Object.entries(ages).sort(function(a,b){return b[1].rev-a[1].rev;});
-
-  var COLORS = ['#6c63ff','#34d399','#fbbf24','#f87171','#a78bfa','#60a5fa','#fb7185','#4ade80','#facc15','#38bdf8'];
-
-  document.getElementById('dash-content').innerHTML =
-    '<div class="kpi-row">' +
-    kpi('Общая выручка', fmtRev(totalRev), '') +
-    kpi('Артикулов', skuRows.length, '') +
-    kpi('Заказ (база)', totalOrder+' шт', '') +
-    kpi('Ср. Sell out', (avgSO*100).toFixed(1)+'%', '') +
-    kpi('🔴 Срочно', urgent+' арт', '') +
-    '</div>' +
-    '<div class="dash-grid">' +
-    '<div class="dash-card"><h4>Выручка по категориям</h4><canvas id="ch-cat" height="200"></canvas></div>' +
-    '<div class="dash-card"><h4>Заказ по категориям (шт)</h4><canvas id="ch-ord" height="200"></canvas></div>' +
-    '<div class="dash-card"><h4>Гендер — выручка</h4><canvas id="ch-gen" height="200"></canvas></div>' +
-    '<div class="dash-card"><h4>Возраст — выручка</h4><canvas id="ch-age" height="200"></canvas></div>' +
-    '<div class="dash-card full"><h4>Топ 10 артикулов по выручке</h4><canvas id="ch-top" height="120"></canvas></div>' +
+  var catS=Object.entries(cats).sort(function(a,b){return b[1].rev-a[1].rev;}).slice(0,10);
+  var genS=Object.entries(genders).sort(function(a,b){return b[1].rev-a[1].rev;});
+  var ageS=Object.entries(ages).sort(function(a,b){return b[1].rev-a[1].rev;});
+  var CLRS=['#6c63ff','#34d399','#fbbf24','#f87171','#a78bfa','#60a5fa','#fb7185','#4ade80','#facc15','#38bdf8'];
+  document.getElementById('dash-content').innerHTML=
+    '<div class="kpi-row">'+kpi('Выручка',fmtRev(totalRev))+kpi('Артикулов',skuRows.length)+kpi('Заказ (база)',totalOrder+' шт')+kpi('Ср. Sell out',(avgSO*100).toFixed(1)+'%')+kpi('🔴 Срочно',urgent+' арт')+'</div>'+
+    '<div class="dash-grid">'+
+    '<div class="dash-card"><h4>Выручка по категориям</h4><canvas id="ch-cat"></canvas></div>'+
+    '<div class="dash-card"><h4>Заказ по категориям (шт)</h4><canvas id="ch-ord"></canvas></div>'+
+    '<div class="dash-card"><h4>Гендер — выручка</h4><canvas id="ch-gen"></canvas></div>'+
+    '<div class="dash-card"><h4>Возраст — выручка</h4><canvas id="ch-age"></canvas></div>'+
+    '<div class="dash-card full"><h4>Топ 10 артикулов по выручке</h4><canvas id="ch-top" height="100"></canvas></div>'+
     '</div>';
-
-  var co = { color: '#e8e8f0', grid: { color: 'rgba(42,42,56,.8)' } };
-
-  // Cat bar
-  new Chart(document.getElementById('ch-cat'), { type:'bar',
-    data:{ labels:catSorted.map(function(c){return c[0];}),
-      datasets:[{data:catSorted.map(function(c){return +c[1].rev.toFixed(0);}),backgroundColor:COLORS,borderRadius:5}]},
-    options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6b6b80'},grid:{color:'rgba(42,42,56,.5)'}},y:{ticks:{color:'#6b6b80'},grid:{color:'rgba(42,42,56,.5)'}}}}
-  });
-  // Order bar
-  new Chart(document.getElementById('ch-ord'), { type:'bar',
-    data:{ labels:catSorted.map(function(c){return c[0];}),
-      datasets:[{data:catSorted.map(function(c){return c[1].order;}),backgroundColor:'#a78bfa',borderRadius:5}]},
-    options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6b6b80'},grid:{color:'rgba(42,42,56,.5)'}},y:{ticks:{color:'#6b6b80'},grid:{color:'rgba(42,42,56,.5)'}}}}
-  });
-  // Gender pie
-  new Chart(document.getElementById('ch-gen'), { type:'doughnut',
-    data:{ labels:genEntries.map(function(g){return g[0];}),
-      datasets:[{data:genEntries.map(function(g){return +g[1].rev.toFixed(0);}),backgroundColor:COLORS,borderWidth:0}]},
-    options:{plugins:{legend:{labels:{color:'#e8e8f0',font:{size:11}}}}}
-  });
-  // Age pie
-  new Chart(document.getElementById('ch-age'), { type:'doughnut',
-    data:{ labels:ageEntries.map(function(a){return a[0];}),
-      datasets:[{data:ageEntries.map(function(a){return +a[1].rev.toFixed(0);}),backgroundColor:COLORS.slice(3),borderWidth:0}]},
-    options:{plugins:{legend:{labels:{color:'#e8e8f0',font:{size:11}}}}}
-  });
-  // Top 10 horizontal bar
-  var top10 = skuRows.slice(0,10);
-  new Chart(document.getElementById('ch-top'), { type:'bar',
-    data:{ labels:top10.map(function(r){return r.art;}),
-      datasets:[{data:top10.map(function(r){return +r.rev.toFixed(0);}),backgroundColor:'#6c63ff',borderRadius:5}]},
-    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6b6b80'},grid:{color:'rgba(42,42,56,.5)'}},y:{ticks:{color:'#6b6b80'},grid:{display:false}}}}
-  });
+  var axOpts={ticks:{color:'#6b6b80'},grid:{color:'rgba(42,42,56,.5)'}};
+  charts.cat=new Chart(document.getElementById('ch-cat'),{type:'bar',data:{labels:catS.map(function(c){return c[0];}),datasets:[{data:catS.map(function(c){return+c[1].rev.toFixed(0);}),backgroundColor:CLRS,borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:axOpts,y:axOpts}}});
+  charts.ord=new Chart(document.getElementById('ch-ord'),{type:'bar',data:{labels:catS.map(function(c){return c[0];}),datasets:[{data:catS.map(function(c){return c[1].order;}),backgroundColor:'#a78bfa',borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:axOpts,y:axOpts}}});
+  charts.gen=new Chart(document.getElementById('ch-gen'),{type:'doughnut',data:{labels:genS.map(function(g){return g[0];}),datasets:[{data:genS.map(function(g){return+g[1].rev.toFixed(0);}),backgroundColor:CLRS,borderWidth:0}]},options:{plugins:{legend:{labels:{color:'#e8e8f0',font:{size:11}}}}}});
+  charts.age=new Chart(document.getElementById('ch-age'),{type:'doughnut',data:{labels:ageS.map(function(a){return a[0];}),datasets:[{data:ageS.map(function(a){return+a[1].rev.toFixed(0);}),backgroundColor:CLRS.slice(3),borderWidth:0}]},options:{plugins:{legend:{labels:{color:'#e8e8f0',font:{size:11}}}}}});
+  var top10=skuRows.slice(0,10);
+  charts.top=new Chart(document.getElementById('ch-top'),{type:'bar',data:{labels:top10.map(function(r){return r.art;}),datasets:[{data:top10.map(function(r){return+r.rev.toFixed(0);}),backgroundColor:'#6c63ff',borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:axOpts,y:{ticks:{color:'#6b6b80'},grid:{display:false}}}}});
 }
-
-function kpi(label, val, sub) {
-  return '<div class="kpi"><div class="kpi-label">'+label+'</div><div class="kpi-val">'+val+'</div>'+(sub?'<div class="kpi-sub">'+sub+'</div>':'')+'</div>';
-}
+function kpi(label,val){return'<div class="kpi"><div class="kpi-label">'+label+'</div><div class="kpi-val">'+val+'</div></div>';}
 
 // ── HISTORY ──────────────────────────────────────────────
-async function renderHistory() {
-  var reports = await sbGet('sku_reports', 'select=*&order=loaded_at.desc');
-  var list = document.getElementById('history-list');
-  if (!Array.isArray(reports) || !reports.length) {
-    list.innerHTML = '<div class="no-data">Нет сохранённых отчётов</div>'; return;
-  }
-  list.innerHTML = reports.map(function(r) {
-    var d = new Date(r.loaded_at);
-    var ds = d.toLocaleDateString('ru')+' '+d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-    var active = r.id === activeReportId ? ' active-rep' : '';
-    return '<div class="history-item'+active+'" onclick="loadReport(\''+r.id+'\')">' +
-      '<div style="flex:1">' +
-        '<div class="hist-name">'+r.name+'</div>' +
-        '<div class="hist-meta">'+ds+' · '+r.stores_now+'→'+r.stores_future+' маг · '+r.period_days+' дн · буфер '+r.buffer_pct+'%</div>' +
-      '</div>' +
-      '<span class="hist-badge">'+(r.id===activeReportId?'Активный':'Загрузить')+'</span>' +
-      '<button class="hist-del" onclick="deleteReport(event,\''+r.id+'\')">✕</button>' +
-      '</div>';
+async function renderHistory(){
+  var reports=await sbGet('sku_reports','select=*&order=loaded_at.desc');
+  var list=document.getElementById('history-list');
+  if(!Array.isArray(reports)||!reports.length){list.innerHTML='<div class="no-data">Нет сохранённых отчётов</div>';return;}
+  list.innerHTML=reports.map(function(r){
+    var d=new Date(r.loaded_at);
+    var ds=d.toLocaleDateString('ru')+' '+d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    var isActive=r.id===activeReportId;
+    return'<div class="history-item'+(isActive?' active-rep':'')+'" onclick="loadReportById(\''+r.id+'\')">'+
+      '<div style="flex:1"><div class="hist-name">'+r.name+'</div><div class="hist-meta">'+ds+' · '+r.stores_now+'→'+r.stores_future+' маг · '+r.period_days+' дн · буфер '+r.buffer_pct+'%</div></div>'+
+      '<span class="hist-badge'+(isActive?' active':'')+'">'+( isActive?'✓ Активный':'Загрузить')+'</span>'+
+      '<button class="hist-del" onclick="deleteReport(event,\''+r.id+'\')">✕</button></div>';
   }).join('');
 }
-
-async function loadReport(id) {
-  var rows = await sbGet('sku_data', 'select=*&report_id=eq.'+id);
-  var rep  = await sbGet('sku_reports', 'select=*&id=eq.'+id);
-  if (!Array.isArray(rows) || !rows.length) { toast('Нет данных', 'err'); return; }
-  activeReportId = id;
-  if (rep && rep[0]) {
-    document.getElementById('s-now').value = rep[0].stores_now;
-    document.getElementById('s-fut').value = rep[0].stores_future;
-    document.getElementById('s-per').value = rep[0].period_days;
-    document.getElementById('s-buf').value = rep[0].buffer_pct;
-    document.getElementById('s-a').value   = rep[0].abc_a;
-    document.getElementById('s-b').value   = rep[0].abc_b;
-  }
-  // Reconstruct skuRaw from DB rows
-  skuRaw = rows.map(function(r) {
-    var o = {};
-    o['ITEM NO.'] = r.article;
-    o['Сумма продаж'] = r.revenue;
-    o['% от продаж'] = r.pct_revenue;
-    o['Закуплено'] = r.bought;
-    o['Продано'] = r.sold;
-    o['Остаток'] = r.stock;
-    o['Sell out'] = r.sellout;
-    o['Прошло дней до SO 60%'] = r.days_to_60;
-    o['Проекция дней до SO 60%'] = r.proj_days_60;
-    o['Проекция дней до нуля'] = r.proj_days_0;
-    o['Ср скорость продаж в день'] = r.spd_avg;
-    o['Скорость продаж (до 60% SO)'] = r.spd_bef;
-    o['Скорость продаж (после SO 60%)'] = r.spd_aft;
-    return o;
-  });
-  document.getElementById('sku-upload').style.display = 'none';
-  document.getElementById('sku-body').style.display = 'flex';
-  document.getElementById('sku-top').style.display = 'block';
-  recalc();
-  updateFilterSelects();
+async function loadReportById(id){
+  showLoading('Загрузка отчёта...');
+  var reports=await sbGet('sku_reports','select=*&id=eq.'+id);
+  if(Array.isArray(reports)&&reports.length){await loadReportData(reports[0]);}
+  hideLoading();
   showTab('sku');
   toast('Отчёт загружен ✓');
+  renderHistory();
 }
-
-async function deleteReport(e, id) {
+async function loadReportData(rep){
+  var rows=await sbGet('sku_data','select=*&report_id=eq.'+rep.id+'&limit=2000');
+  if(!Array.isArray(rows)||!rows.length){hideLoading();return;}
+  activeReportId=rep.id;
+  document.getElementById('s-now').value=rep.stores_now;
+  document.getElementById('s-fut').value=rep.stores_future;
+  document.getElementById('s-per').value=rep.period_days;
+  document.getElementById('s-buf').value=rep.buffer_pct;
+  document.getElementById('s-a').value=rep.abc_a;
+  document.getElementById('s-b').value=rep.abc_b;
+  skuRaw=rows.map(function(r){
+    var o={};
+    o['ITEM NO.']=r.article;o['Сумма продаж']=r.revenue;o['% от продаж']=r.pct_revenue;
+    o['Закуплено']=r.bought;o['Продано']=r.sold;o['Остаток']=r.stock;o['Sell out']=r.sellout;
+    o['Прошло дней до SO 60%']=r.days_to_60;o['Проекция дней до SO 60%']=r.proj_days_60;
+    o['Проекция дней до нуля']=r.proj_days_0;o['Ср скорость продаж в день']=r.spd_avg;
+    o['Скорость продаж (до 60% SO)']=r.spd_bef;o['Скорость продаж (после SO 60%)']=r.spd_aft;
+    return o;
+  });
+  showSkuUI();
+}
+async function deleteReport(e,id){
   e.stopPropagation();
-  if (!confirm('Удалить отчёт?')) return;
-  await sbDelete('sku_data', 'report_id=eq.'+id);
-  await sbDelete('sku_reports', 'id=eq.'+id);
-  if (activeReportId === id) { activeReportId = null; }
+  if(!confirm('Удалить отчёт?'))return;
+  await sbDelete('sku_data','report_id=eq.'+id);
+  await sbDelete('sku_reports','id=eq.'+id);
+  if(activeReportId===id){activeReportId=null;}
   renderHistory();
   toast('Удалено');
 }
 
 // ── DIRECTORY ────────────────────────────────────────────
-async function loadDirFromDB() {
-  var rows = await sbGet('directory');
-  if (!Array.isArray(rows)) return;
-  rows.forEach(function(r){ dirData[r.article] = r; });
+async function loadDirFromDB(){
+  var rows=await sbGet('directory');
+  if(Array.isArray(rows)){rows.forEach(function(r){dirData[r.article]=r;});}
 }
-
-function loadDirectory(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var wb = XLSX.read(e.target.result, { type:'array' });
-    var ws = wb.Sheets[wb.SheetNames[0]];
-    var rows = XLSX.utils.sheet_to_json(ws, { defval:'' });
-    rows.forEach(function(r) {
-      var art = String(r['Артикул']||r['ITEM NO.']||r['article']||'').trim();
-      if (!art) return;
-      dirData[art] = {
-        article: art,
-        category:  r['Категория']||r['category']||'',
-        gender:    r['Гендер']||r['gender']||'',
-        age_group: r['Возраст']||r['age_group']||'',
-        season:    r['Сезон']||r['season']||'',
-        brand:     r['Бренд']||r['brand']||'',
-        notes:     r['Заметки']||r['notes']||''
-      };
+function loadDirectory(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var wb=XLSX.read(e.target.result,{type:'array'});
+    var ws=wb.Sheets[wb.SheetNames[0]];
+    var rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+    rows.forEach(function(r){
+      var art=String(r['Артикул']||r['ITEM NO.']||r['article']||'').trim();
+      if(!art)return;
+      dirData[art]={article:art,category:r['Категория']||r['category']||'',gender:r['Гендер']||r['gender']||'',age_group:r['Возраст']||r['age_group']||'',season:r['Сезон']||r['season']||'',brand:r['Бренд']||r['brand']||'',notes:r['Заметки']||r['notes']||''};
     });
     renderDirTable();
     toast('Справочник загружен: '+rows.length+' строк');
   };
   reader.readAsArrayBuffer(file);
 }
-
-function renderDirTable() {
-  var entries = Object.values(dirData);
-  document.getElementById('dir-count').textContent = entries.length + ' артикулов';
-  if (!entries.length) {
-    document.getElementById('dir-tbody').innerHTML = '<tr><td colspan="8" class="no-data">Нет данных</td></tr>'; return;
-  }
+function renderDirTable(){
+  var entries=Object.values(dirData);
+  document.getElementById('dir-count').textContent=entries.length+' артикулов';
+  if(!entries.length){document.getElementById('dir-tbody').innerHTML='<tr><td colspan="8" class="no-data">Нет данных</td></tr>';return;}
   entries.sort(function(a,b){return a.article.localeCompare(b.article);});
-  document.getElementById('dir-tbody').innerHTML = entries.map(function(r) {
-    var a = r.article;
-    return '<tr>' +
-      '<td><span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent2);font-size:12px">'+a+'</span></td>' +
-      dirCell(a,'category',r.category) +
-      dirCell(a,'gender',r.gender) +
-      dirCell(a,'age_group',r.age_group) +
-      dirCell(a,'season',r.season) +
-      dirCell(a,'brand',r.brand) +
-      dirCell(a,'notes',r.notes) +
-      '<td><button style="padding:4px 8px;border-radius:5px;border:1px solid rgba(248,113,113,.3);background:transparent;color:#f87171;font-size:10px;cursor:pointer" onclick="delDirRow(\''+a+'\')">✕</button></td>' +
-      '</tr>';
+  document.getElementById('dir-tbody').innerHTML=entries.map(function(r){
+    var a=r.article;
+    return'<tr>'+
+      '<td><span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent2);font-size:11px">'+a+'</span></td>'+
+      dC(a,'category',r.category)+dC(a,'gender',r.gender)+dC(a,'age_group',r.age_group)+dC(a,'season',r.season)+dC(a,'brand',r.brand)+dC(a,'notes',r.notes)+
+      '<td><button style="padding:3px 7px;border-radius:4px;border:1px solid rgba(248,113,113,.3);background:transparent;color:#f87171;font-size:10px;cursor:pointer" onclick="delDirRow(\''+a+'\')">✕</button></td></tr>';
   }).join('');
 }
-
-function dirCell(art, field, val) {
-  return '<td><input class="dir-inp" value="'+(val||'')+'" onchange="updateDir(\''+art+'\',\''+field+'\',this.value)" placeholder="—"></td>';
-}
-
-function updateDir(art, field, val) {
-  if (!dirData[art]) { dirData[art] = { article: art }; }
-  dirData[art][field] = val;
-}
-
-async function saveDirAll() {
-  var entries = Object.values(dirData);
-  if (!entries.length) return;
-  for (var i=0; i<entries.length; i+=50) {
-    var batch = entries.slice(i,i+50).map(function(r) {
-      return { article:r.article, category:r.category||'', gender:r.gender||'', age_group:r.age_group||'', season:r.season||'', brand:r.brand||'', notes:r.notes||'' };
-    });
-    await sbUpsert('directory', batch, 'article');
+function dC(art,field,val){return'<td><input class="dir-inp" value="'+(val||'')+'" onchange="updateDir(\''+art+'\',\''+field+'\',this.value)" placeholder="—"></td>';}
+function updateDir(art,field,val){if(!dirData[art]){dirData[art]={article:art};}dirData[art][field]=val;}
+async function saveDirAll(){
+  var entries=Object.values(dirData);if(!entries.length)return;
+  for(var i=0;i<entries.length;i+=50){
+    var batch=entries.slice(i,i+50).map(function(r){return{article:r.article,category:r.category||'',gender:r.gender||'',age_group:r.age_group||'',season:r.season||'',brand:r.brand||'',notes:r.notes||''};});
+    await sbUpsert('directory',batch,'article');
   }
-  recalc();
-  updateFilterSelects();
-  toast('Справочник сохранён ✓');
+  recalc();updateFilterSelects();toast('Справочник сохранён ✓');
 }
-
-function delDirRow(art) {
-  delete dirData[art];
-  sbDelete('directory','article=eq.'+encodeURIComponent(art));
-  renderDirTable();
-}
-
-function exportDirectory() {
+function delDirRow(art){delete dirData[art];sbDelete('directory','article=eq.'+encodeURIComponent(art));renderDirTable();}
+function exportDirectory(){
   var data=[['Артикул','Категория','Гендер','Возраст','Сезон','Бренд','Заметки']];
-  Object.values(dirData).forEach(function(r){
-    data.push([r.article,r.category||'',r.gender||'',r.age_group||'',r.season||'',r.brand||'',r.notes||'']);
-  });
+  Object.values(dirData).forEach(function(r){data.push([r.article,r.category||'',r.gender||'',r.age_group||'',r.season||'',r.brand||'',r.notes||'']);});
   dlXlsx(data,'directory');
 }
 
 // ── UTILS ────────────────────────────────────────────────
-function dlXlsx(data, name) {
-  var ws=XLSX.utils.aoa_to_sheet(data);
-  var wb2=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb2,ws,'Data');
-  XLSX.writeFile(wb2,name.replace(/[^\w\-А-Яа-яЁё]/g,'_')+'.xlsx');
-}
-function fmtRev(n){
-  if(n>=1000000)return(n/1000000).toFixed(1)+'M';
-  if(n>=1000)return(n/1000).toFixed(1)+'k';
-  return Math.round(n).toString();
-}
+function dlXlsx(data,name){var ws=XLSX.utils.aoa_to_sheet(data);var wb2=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb2,ws,'Data');XLSX.writeFile(wb2,name.replace(/[^\w\-А-Яа-яЁё]/g,'_')+'.xlsx');}
+function fmtRev(n){if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'k';return Math.round(n).toString();}
 function soColor(v){return v>=0.9?'#f87171':(v>=0.7?'#fbbf24':'#34d399');}
 function eid(s){return String(s).replace(/[^a-zA-Z0-9_\-А-Яа-яЁё]/g,'_');}
 
