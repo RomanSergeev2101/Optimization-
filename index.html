@@ -475,6 +475,78 @@
   .stat-card .s-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
   .stat-card .s-val { font-size: 22px; font-weight: 800; color: var(--text); }
 
+  /* SKU ANALYSIS */
+  .sku-ctrl-group { display:flex; flex-direction:column; gap:5px; }
+  .ctrl-label { font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+  .ctrl-input {
+    padding:7px 10px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:var(--text);
+    font-size:13px;
+    font-weight:600;
+    width:100px;
+    outline:none;
+  }
+  .ctrl-input:focus { border-color:var(--accent); }
+
+  .sku-table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    min-width:900px;
+  }
+  .sku-table th {
+    position:sticky;
+    top:0;
+    background:var(--bg);
+    padding:9px 12px;
+    text-align:left;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.07em;
+    text-transform:uppercase;
+    color:var(--muted);
+    border-bottom:2px solid var(--border);
+    z-index:2;
+    white-space:nowrap;
+  }
+  .sku-table td {
+    padding:9px 12px;
+    border-bottom:1px solid rgba(42,42,56,0.5);
+    white-space:nowrap;
+  }
+  .sku-table tr:hover td { background:var(--row-hover); }
+
+  .abc-badge {
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:5px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:0.06em;
+  }
+  .abc-a { background:rgba(52,211,153,0.15); color:#34d399; border:1px solid rgba(52,211,153,0.3); }
+  .abc-b { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+  .abc-c { background:rgba(107,107,128,0.15); color:#9ca3af; border:1px solid rgba(107,107,128,0.25); }
+
+  .abc-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 20px;
+    min-width:160px;
+    flex:1;
+  }
+  .abc-card-title { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+  .abc-card-row { display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px; }
+  .abc-card-row span:last-child { font-weight:700; color:var(--text); }
+
+  .order-cell-base { color:var(--accent2); font-weight:700; }
+  .order-cell-min { color:#f87171; font-weight:600; }
+  .order-cell-max { color:#34d399; font-weight:600; }
+
   /* SCROLLBAR */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -496,6 +568,7 @@
   <div class="tab-bar">
     <button class="tab active" onclick="switchTab('packing')">Паккинг лист</button>
     <button class="tab" onclick="switchTab('invoice')">Инвойс</button>
+    <button class="tab" onclick="switchTab('sku')">📊 Анализ SKU</button>
   </div>
 </header>
 
@@ -544,9 +617,96 @@
     </div>
   </div>
 
-</div>
+  <!-- SKU ANALYSIS TAB -->
+  <div id="tab-sku" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
 
-<script>
+    <!-- TOP CONTROLS BAR -->
+    <div id="sku-controls" style="display:none;border-bottom:1px solid var(--border);padding:14px 24px;background:var(--bg);flex-shrink:0;">
+      <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+
+        <div class="sku-ctrl-group">
+          <label class="ctrl-label">Магазинов сейчас</label>
+          <input class="ctrl-input" id="sku-stores-now" type="number" min="1" value="10" onchange="recalcAll()">
+        </div>
+
+        <div class="sku-ctrl-group">
+          <label class="ctrl-label">Магазинов будет</label>
+          <input class="ctrl-input" id="sku-stores-future" type="number" min="1" value="10" onchange="recalcAll()">
+        </div>
+
+        <div class="sku-ctrl-group">
+          <label class="ctrl-label">Период продаж (дней)</label>
+          <input class="ctrl-input" id="sku-period" type="number" min="1" value="60" onchange="recalcAll()">
+        </div>
+
+        <div class="sku-ctrl-group">
+          <label class="ctrl-label">Буфер ±%</label>
+          <input class="ctrl-input" id="sku-buffer" type="number" min="0" max="100" value="20" onchange="recalcAll()">
+        </div>
+
+        <div class="sku-ctrl-group">
+          <label class="ctrl-label">ABC: A до %</label>
+          <input class="ctrl-input" id="abc-a" type="number" value="80" min="1" max="99" style="width:70px" onchange="recalcAll()">
+        </div>
+        <div class="sku-ctrl-group">
+          <label class="ctrl-label">B до %</label>
+          <input class="ctrl-input" id="abc-b" type="number" value="95" min="1" max="100" style="width:70px" onchange="recalcAll()">
+        </div>
+
+        <div style="display:flex;gap:8px;margin-left:auto;align-items:flex-end;">
+          <button class="export-btn" onclick="exportSkuExcel()">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Выгрузить Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD or TABLE -->
+    <div id="sku-upload-area" style="flex:1;display:flex;align-items:center;justify-content:center;">
+      <div class="invoice-zone" style="max-width:460px;width:100%"
+        onclick="document.getElementById('file-sku').click()"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleSkuDrop(event)">
+        <div class="big-icon">📊</div>
+        <h3>Загрузите файл анализа SKU</h3>
+        <p>Формат: ITEM NO. / Сумма продаж / % от продаж /<br>Ср скорость продаж в день / Остаток...</p>
+      </div>
+      <input type="file" id="file-sku" accept=".xlsx,.xls" onchange="loadSkuFile(this)">
+    </div>
+
+    <div id="sku-content" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+
+      <!-- ABC SUMMARY CARDS -->
+      <div id="sku-abc-cards" style="display:flex;gap:12px;padding:16px 24px 0;flex-shrink:0;flex-wrap:wrap;"></div>
+
+      <!-- TABLE -->
+      <div style="flex:1;overflow:auto;padding:16px 24px 24px;">
+        <table class="sku-table" id="sku-table">
+          <thead>
+            <tr>
+              <th style="width:36px">#</th>
+              <th>Артикул</th>
+              <th>ABC</th>
+              <th>Выручка</th>
+              <th>% выручки</th>
+              <th>Ср. скорость<br>прод/день</th>
+              <th>Остаток</th>
+              <th>Sell out %</th>
+              <th title="Скорость с учётом кол-ва магазинов на 1 магазин">Скор./магазин</th>
+              <th title="Расчётная потребность на период">Заказ (база)</th>
+              <th>Заказ −20%</th>
+              <th>Заказ +20%</th>
+            </tr>
+          </thead>
+          <tbody id="sku-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
 let packingData = []; // { article, category, sizes: {size: total}, boxes: [{box, sizes}] }
 let selectedArticle = null;
 let invoiceData = null;
@@ -557,6 +717,7 @@ function switchTab(tab) {
   event.target.classList.add('active');
   document.getElementById('tab-packing').style.display = tab === 'packing' ? 'flex' : 'none';
   document.getElementById('tab-invoice').style.display = tab === 'invoice' ? 'flex' : 'none';
+  document.getElementById('tab-sku').style.display = tab === 'sku' ? 'flex' : 'none';
 }
 
 // ======== PACKING LIST LOAD ========
@@ -817,7 +978,189 @@ function clearInvoice() {
   document.getElementById('file-inv').value = '';
 }
 
+// ======== SKU ANALYSIS ========
+let skuRaw = [];
+
+function handleSkuDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) readSkuFile(file);
+}
+
+function loadSkuFile(input) {
+  if (input.files[0]) readSkuFile(input.files[0]);
+}
+
+function readSkuFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const wb = XLSX.read(e.target.result, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { defval: 0 });
+    // Filter out total row
+    skuRaw = rows.filter(r => {
+      const art = String(r['ITEM NO.'] || '').trim();
+      return art && art.toLowerCase() !== 'total' && art !== '0';
+    });
+    document.getElementById('sku-upload-area').style.display = 'none';
+    document.getElementById('sku-content').style.display = 'flex';
+    document.getElementById('sku-controls').style.display = 'block';
+    recalcAll();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function getNum(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function recalcAll() {
+  if (!skuRaw.length) return;
+
+  const storesNow    = getNum('sku-stores-now')    || 1;
+  const storesFuture = getNum('sku-stores-future')  || 1;
+  const period       = getNum('sku-period')         || 60;
+  const buffer       = getNum('sku-buffer')         / 100; // 0.20
+  const abcALimit    = getNum('abc-a')              / 100; // 0.80
+  const abcBLimit    = getNum('abc-b')              / 100; // 0.95
+
+  // Sort by revenue desc, compute cumulative % for ABC
+  const sorted = [...skuRaw]
+    .filter(r => (r['Сумма продаж'] || 0) > 0)
+    .sort((a, b) => (b['Сумма продаж'] || 0) - (a['Сумма продаж'] || 0));
+
+  const totalRev = sorted.reduce((s, r) => s + (r['Сумма продаж'] || 0), 0);
+  let cumPct = 0;
+
+  const rows = sorted.map((r, i) => {
+    const rev      = r['Сумма продаж']   || 0;
+    const pctRev   = r['% от продаж']    || (rev / totalRev);
+    const speedDay = r['Ср скорость продаж в день'] || 0;
+    const stock    = r['Остаток']        || 0;
+    const sellout  = r['Sell out']       || 0;
+
+    cumPct += (rev / totalRev);
+    const abc = cumPct <= abcALimit ? 'A' : cumPct <= abcBLimit ? 'B' : 'C';
+
+    // Speed per store (based on current stores)
+    const speedPerStore = storesNow > 0 ? speedDay / storesNow : speedDay;
+
+    // Order calc:
+    // Need = speedPerStore × storesFuture × period
+    // Minus existing stock
+    const need = speedPerStore * storesFuture * period;
+    const orderBase = Math.max(0, Math.round(need - stock));
+    const orderMin  = Math.round(orderBase * (1 - buffer));
+    const orderMax  = Math.round(orderBase * (1 + buffer));
+
+    return { i: i+1, article: r['ITEM NO.'], abc, rev, pctRev, cumPct, speedDay, speedPerStore, stock, sellout, orderBase, orderMin, orderMax };
+  });
+
+  renderSkuTable(rows);
+  renderAbcCards(rows, totalRev);
+}
+
+function renderSkuTable(rows) {
+  const tbody = document.getElementById('sku-tbody');
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td style="color:var(--muted)">${r.i}</td>
+      <td style="font-family:'Courier New',monospace;font-weight:700;color:var(--accent2)">${r.article}</td>
+      <td><span class="abc-badge abc-${r.abc.toLowerCase()}">${r.abc}</span></td>
+      <td>${fmtNum(r.rev)}</td>
+      <td style="color:var(--muted)">${(r.pctRev * 100).toFixed(2)}%</td>
+      <td>${r.speedDay.toFixed(3)}</td>
+      <td>${r.stock}</td>
+      <td>${r.sellout ? (r.sellout * 100).toFixed(1) + '%' : '—'}</td>
+      <td style="color:var(--yellow)">${r.speedPerStore.toFixed(4)}</td>
+      <td class="order-cell-base">${r.orderBase}</td>
+      <td class="order-cell-min">${r.orderMin}</td>
+      <td class="order-cell-max">${r.orderMax}</td>
+    </tr>`).join('');
+}
+
+function renderAbcCards(rows, totalRev) {
+  const groups = { A: [], B: [], C: [] };
+  rows.forEach(r => groups[r.abc].push(r));
+
+  const cards = document.getElementById('sku-abc-cards');
+  cards.innerHTML = ['A','B','C'].map(g => {
+    const items = groups[g];
+    const gRev = items.reduce((s,r) => s + r.rev, 0);
+    const gOrder = items.reduce((s,r) => s + r.orderBase, 0);
+    const colors = { A: 'var(--green)', B: 'var(--yellow)', C: 'var(--muted)' };
+    return `<div class="abc-card">
+      <div class="abc-card-title" style="color:${colors[g]}">Группа ${g}</div>
+      <div class="abc-card-row"><span>Артикулов</span><span>${items.length}</span></div>
+      <div class="abc-card-row"><span>Выручка</span><span>${fmtNum(gRev)}</span></div>
+      <div class="abc-card-row"><span>% выручки</span><span>${totalRev > 0 ? (gRev/totalRev*100).toFixed(1)+'%' : '—'}</span></div>
+      <div class="abc-card-row"><span>Заказ (база)</span><span style="color:var(--accent2)">${gOrder}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function exportSkuExcel() {
+  if (!skuRaw.length) return;
+
+  const storesNow    = getNum('sku-stores-now')    || 1;
+  const storesFuture = getNum('sku-stores-future')  || 1;
+  const period       = getNum('sku-period')         || 60;
+  const buffer       = getNum('sku-buffer')         / 100;
+  const abcALimit    = getNum('abc-a')              / 100;
+  const abcBLimit    = getNum('abc-b')              / 100;
+
+  const sorted = [...skuRaw]
+    .filter(r => (r['Сумма продаж'] || 0) > 0)
+    .sort((a, b) => (b['Сумма продаж'] || 0) - (a['Сумма продаж'] || 0));
+
+  const totalRev = sorted.reduce((s, r) => s + (r['Сумма продаж'] || 0), 0);
+  let cumPct = 0;
+
+  const wsData = [[
+    '№', 'Артикул', 'ABC', 'Выручка', '% выручки', '% накопл.',
+    'Ср. скорость (день)', 'Скорость/магазин', 'Остаток', 'Sell out %',
+    `Заказ база (${storesFuture} маг, ${period} дн)`,
+    `Заказ -${getNum('sku-buffer')}%`,
+    `Заказ +${getNum('sku-buffer')}%`
+  ]];
+
+  sorted.forEach((r, i) => {
+    const rev = r['Сумма продаж'] || 0;
+    const speedDay = r['Ср скорость продаж в день'] || 0;
+    const stock = r['Остаток'] || 0;
+    const sellout = r['Sell out'] || 0;
+    cumPct += (rev / totalRev);
+    const abc = cumPct <= abcALimit ? 'A' : cumPct <= abcBLimit ? 'B' : 'C';
+    const speedPerStore = storesNow > 0 ? speedDay / storesNow : speedDay;
+    const need = speedPerStore * storesFuture * period;
+    const orderBase = Math.max(0, Math.round(need - stock));
+    wsData.push([
+      i+1, r['ITEM NO.'], abc,
+      +rev.toFixed(2),
+      +((rev/totalRev)*100).toFixed(4),
+      +(cumPct*100).toFixed(4),
+      +speedDay.toFixed(4),
+      +speedPerStore.toFixed(5),
+      stock,
+      sellout ? +(sellout*100).toFixed(1) : 0,
+      orderBase,
+      Math.round(orderBase*(1-buffer)),
+      Math.round(orderBase*(1+buffer))
+    ]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [4,18,6,14,12,12,20,18,10,12,28,16,16].map(w=>({wch:w}));
+  const wb2 = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb2, ws, 'SKU Analysis');
+  XLSX.writeFile(wb2, 'sku-analysis.xlsx');
+}
+
+function fmtNum(n) {
+  return n >= 1000 ? (n/1000).toFixed(1)+'k' : Math.round(n).toString();
+}
+
 function esc(s) { return String(s).replace(/[^a-zA-Z0-9_-]/g,'_'); }
+
 </script>
 </body>
 </html>
