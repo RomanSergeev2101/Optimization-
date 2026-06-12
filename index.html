@@ -583,7 +583,7 @@ function processPackingList(rows, filename) {
   const fixed = ['ITEM NO.', 'ITEM NO', 'DEVISION', 'DIVISION', 'Unnamed: 2', 'QTY', 'Unnamed: 26'];
   const sample = rows[0] || {};
   const allCols = Object.keys(sample);
-  const sizeCols = allCols.filter(c => !fixed.includes(c) && c !== 'FREE');
+  const sizeCols = allCols.filter(c => !fixed.includes(c));
 
   // Detect category column
   const catCol = allCols.find(c => ['DEVISION','DIVISION','Unnamed: 2'].includes(c));
