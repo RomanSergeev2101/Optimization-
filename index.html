@@ -357,7 +357,10 @@ tr:hover .row-clear{opacity:1;}
   <div class="order-panel hidden" id="op">
     <div class="op-head">
       <h3 class="t" data-en="Your Order" data-ru="Ваш заказ">Your Order</h3>
-      <button class="btn btn-outline" style="font-size:10px;padding:3px 8px;" onclick="clearOrder()" t data-en="Clear" data-ru="Очистить">Clear</button>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="btn btn-outline" style="font-size:10px;padding:3px 8px;" onclick="clearOrder()"><span class="t" data-en="Clear" data-ru="Очистить">Clear</span></button>
+        <button onclick="toggleOP()" style="background:none;border:1px solid #444;color:#888;width:26px;height:26px;border-radius:3px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;" title="Close">✕</button>
+      </div>
     </div>
     <div class="op-body" id="op-list"></div>
     <div class="op-foot">
@@ -923,7 +926,8 @@ function clearOrder(){
 
 // ═══════════════════════ EXPORT ═══════════════════════
 function exportExcel(){
-  const wb=XLSX.utils.book_new();const cc=getCostCoeff();const rr=getRetailRate();
+  const wb=XLSX.utils.book_new();
+  const sym=getRetailCurrency();const cc=getCostCoeff();const rr=getRetailRate();
 
   // ── Size definitions (same as table) ──
   const APP_SZ={
@@ -1039,10 +1043,11 @@ function exportExcel(){
     rows.push(row);
   });
 
-  // Total row
-  const totalRow=new Array(BASE.length).fill('');
+  // Total row - full width
+  const fullRowLen=BASE.length+ALL_APP.length+ALL_FTW.length+1+4; // +1 one-size +4 totals
+  const totalRow=new Array(fullRowLen).fill('');
   totalRow[0]='TOTAL';
-  totalRow[totalCol]= tu;
+  totalRow[totalCol]=tu;
   totalRow[totalCol+1]=ta;
   totalRow[totalCol+2]=tr2;
   totalRow[totalCol+3]=tc;
@@ -1062,8 +1067,8 @@ function exportExcel(){
   ];
   ws1['!cols']=colWidths.map(w=>({wch:w}));
 
-  // Freeze top 4 rows and first 2 cols
-  ws1['!freeze']={xSplit:2,ySplit:4,topLeftCell:'C5'};
+  // Freeze panes (SheetJS correct syntax)
+  ws1['!freeze']={xSplit:2,ySplit:4};
 
   XLSX.utils.book_append_sheet(wb,ws1,'Order (Horizontal)');
 
