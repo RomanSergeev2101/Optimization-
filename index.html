@@ -311,6 +311,7 @@ tr:hover .row-clear{opacity:1;}
           <option value="₸">₸ KZT</option>
           <option value="₴">₴ UAH</option>
           <option value="лв">лв BGN</option>
+          <option value="сўм">сўм UZS</option>
         </select>
         <span class="px-hint t" data-en="Retail = RRP × rate" data-ru="Розница = РРЦ × курс">Retail = RRP × rate</span>
       </div>
@@ -922,45 +923,164 @@ function clearOrder(){
 
 // ═══════════════════════ EXPORT ═══════════════════════
 function exportExcel(){
-  const keys=Object.keys(orders);
-  if(!keys.length){showToast(lang==='ru'?'Заказ пуст!':'Order is empty!','err');return;}
-  const wb=XLSX.utils.book_new();
+  const wb=XLSX.utils.book_new();const cc=getCostCoeff();const rr=getRetailRate();
 
-  // Sheet 1: Summary
-  const sym=getRetailCurrency();const cc=getCostCoeff();const rr=getRetailRate();
-  const rows=[['Li-Ning 27Q1 Main-Line — Order'],['Date:',new Date().toLocaleDateString()],
-    ['Cost coeff:',cc,'Retail rate:',rr,sym],[''],
-    ['ITEM NO.','DIVISION','CATEGORY','SUB-CATEGORY','COLOUR','GENDER','SIZE','QTY',
-     'RRP ¥','COST ¥',`RETAIL ${sym}`,'AMOUNT RRP ¥',`AMOUNT RETAIL ${sym}`,'GRADE','KEY','POP','LAUNCH DATE']];
+  // ── Size definitions (same as table) ──
+  const APP_SZ={
+    'XS-5XL':['XS','S','M','L','XL','2XL','3XL','4XL','5XL'],
+    'S-5XL':['S','M','L','XL','2XL','3XL','4XL','5XL'],
+    'S-4XL':['S','M','L','XL','2XL','3XL','4XL'],
+    'XS-3XL':['XS','S','M','L','XL','2XL','3XL'],
+    'XS-4XL':['XS','S','M','L','XL','2XL','3XL','4XL'],
+    'XS-8XL':['XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL','7XL','8XL'],
+    'XXS-8XL':['XXS','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL','7XL','8XL'],
+    'XXS-3XL':['XXS','XS','S','M','L','XL','2XL','3XL'],
+    'XXS-4XL':['XXS','XS','S','M','L','XL','2XL','3XL','4XL'],
+  };
+  const FTW_SZ={
+    '6.5-15':['6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14','15'],
+    '5,6-15':['5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14','15'],
+    '6.5-11,12,13':['6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12','13'],
+    '6.5-14':['6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14'],
+    '4.5-11,12,13,14':['4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12','13','14'],
+    '6.5-11,12,13,14':['6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12','13','14'],
+    '6.5-11,12':['6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12'],
+    '4.5-8,9,10':['4.5','5','5.5','6','6.5','7','7.5','8','9','10'],
+    '4.5-8,9':['4.5','5','5.5','6','6.5','7','7.5','8','9'],
+    '4.5-9':['4.5','5','5.5','6','6.5','7','7.5','8','8.5','9'],
+    '4.5-12':['4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12'],
+    '4-11,12':['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12'],
+    '4-12':['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','12'],
+    '6.5-11':['6.5','7','7.5','8','8.5','9','9.5','10','10.5','11'],
+    '6-8,9':['6','6.5','7','7.5','8','9'],
+  };
+  function getItemSizes(item){
+    if(item.division==='APP') return APP_SZ[item.size_range]||[];
+    if(item.division==='FTW') return FTW_SZ[item.size_range]||[item.size_range];
+    return item.size_range?[item.size_range]:['ONE SIZE'];
+  }
+
+  // ── ALL APP sizes union (for columns) ──
+  const ALL_APP=['XXS','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL','7XL','8XL'];
+  // ── ALL FTW sizes union ──
+  const ALL_FTW=['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14','15'];
+  // ── ACC/EQM: one size ──
+
+  // ── Build fixed columns ──
+  const BASE=['ITEM NO.','DIVISION','CATEGORY','SUB-CATEGORY','COLOUR','GENDER',
+    'RRP ¥','COST ¥',`RETAIL ${sym}`,'GRADE','KEY','POP','LAUNCH DATE'];
+
+  // Header row: base + APP sizes + FTW sizes + ACC + TOTAL
+  const header=[...BASE,...ALL_APP,...ALL_FTW,'ONE SIZE','TOTAL QTY','AMOUNT RRP ¥',`AMOUNT RETAIL ${sym}`,'AMOUNT COST ¥'];
+  const appStart=BASE.length;
+  const ftwStart=appStart+ALL_APP.length;
+  const accCol=ftwStart+ALL_FTW.length;
+  const totalCol=accCol+1;
+
+  const rows=[
+    ['Li-Ning 27Q1 Main-Line — Order (Horizontal)'],
+    ['Date:',new Date().toLocaleDateString(),'Cost coeff:',cc,'Retail rate:',rr,sym],
+    [],
+    header
+  ];
+
   let tu=0,ta=0,tc=0,tr2=0;
-  keys.sort().forEach(n=>{
+
+  // Include ALL catalog items (not just ordered ones)
+  CATALOG.forEach(item=>{
+    const ord=orders[item.item_no]||{};
+    const sizes=getItemSizes(item);
+    const rrp=item.price;
+    const costPer=Math.round(rrp*cc*100)/100;
+    const retailPer=Math.round(rrp*rr);
+
+    // Base columns
+    const row=[
+      item.item_no, item.division, item.category, item.sub_category,
+      item.colour, item.gender,
+      rrp, costPer, retailPer,
+      item.grade, item.key_item, item.pop_item, item.launch_date
+    ];
+
+    // APP size columns
+    ALL_APP.forEach(sz=>{
+      if(item.division==='APP'&&sizes.includes(sz)){
+        row.push(ord[sz]||0);
+      } else {
+        row.push('');
+      }
+    });
+
+    // FTW size columns
+    ALL_FTW.forEach(sz=>{
+      if(item.division==='FTW'&&sizes.includes(sz)){
+        row.push(ord[sz]||0);
+      } else {
+        row.push('');
+      }
+    });
+
+    // ACC / ONE SIZE
+    if(item.division==='ACC'||item.division==='EQM'){
+      const sz=sizes[0]||'ONE SIZE';
+      row.push(ord[sz]||0);
+    } else {
+      row.push('');
+    }
+
+    // Totals
+    const totalQty=Object.values(ord).reduce((a,b)=>a+b,0);
+    const amtRRP=totalQty*rrp;
+    const amtRetail=totalQty*retailPer;
+    const amtCost=totalQty*costPer;
+    row.push(totalQty||0, amtRRP||0, amtRetail||0, amtCost||0);
+
+    tu+=totalQty;ta+=amtRRP;tc+=amtCost;tr2+=amtRetail;
+    rows.push(row);
+  });
+
+  // Total row
+  const totalRow=new Array(BASE.length).fill('');
+  totalRow[0]='TOTAL';
+  totalRow[totalCol]= tu;
+  totalRow[totalCol+1]=ta;
+  totalRow[totalCol+2]=tr2;
+  totalRow[totalCol+3]=tc;
+  rows.push([]);
+  rows.push(totalRow);
+
+  const ws1=XLSX.utils.aoa_to_sheet(rows);
+  // Column widths
+  const colWidths=[
+    14,10,16,18,22,8,  // base info
+    9,9,12,            // prices
+    7,5,5,12,          // grade/key/pop/date
+    ...ALL_APP.map(()=>5),
+    ...ALL_FTW.map(()=>5),
+    6,                 // one size
+    10,12,14,12        // totals
+  ];
+  ws1['!cols']=colWidths.map(w=>({wch:w}));
+
+  // Freeze top 4 rows and first 2 cols
+  ws1['!freeze']={xSplit:2,ySplit:4,topLeftCell:'C5'};
+
+  XLSX.utils.book_append_sheet(wb,ws1,'Order (Horizontal)');
+
+  // ── Sheet 2: Ordered only (vertical, for reimport) ──
+  const raw=[['ITEM_NO','DIVISION','STYLE_NUMBER','CATEGORY','SUB_CATEGORY','COLOUR','GENDER','SIZE','QTY','PRICE','GRADE','LAUNCH_DATE']];
+  Object.keys(orders).sort().forEach(n=>{
     const item=CATALOG.find(r=>r.item_no===n);if(!item)return;
     Object.entries(orders[n]).forEach(([sz,q])=>{
-      const rrp=item.price;
-      const costPer=Math.round(rrp*cc*100)/100;
-      const retailPer=Math.round(rrp*rr);
-      const a=q*rrp;const ac=q*costPer;const ar=q*retailPer;
-      tu+=q;ta+=a;tc+=ac;tr2+=ar;
-      rows.push([n,item.division,item.category,item.sub_category,item.colour,item.gender,sz,q,
-        rrp,costPer,retailPer,a,ar,item.grade,item.key_item,item.pop_item,item.launch_date]);
+      if(q>0)raw.push([n,item.division,item.style_number,item.category,item.sub_category,item.colour,item.gender,sz,q,item.price,item.grade,item.launch_date]);
     });
   });
-  rows.push([''],['TOTAL UNITS:','','','','','','',tu,'',tc,'',ta,tr2]);
-  const ws1=XLSX.utils.aoa_to_sheet(rows);
-  ws1['!cols']=[14,10,14,18,22,8,8,6,10,10,12,12,14,8,6,6,14].map(w=>({wch:w}));
-  XLSX.utils.book_append_sheet(wb,ws1,'Order Summary');
-
-  // Sheet 2: Raw (for reimport)
-  const raw=[['ITEM_NO','DIVISION','STYLE_NUMBER','CATEGORY','SUB_CATEGORY','COLOUR','GENDER','SIZE','QTY','PRICE','GRADE','LAUNCH_DATE']];
-  keys.sort().forEach(n=>{
-    const item=CATALOG.find(r=>r.item_no===n);if(!item)return;
-    Object.entries(orders[n]).forEach(([sz,q])=>raw.push([n,item.division,item.style_number,item.category,item.sub_category,item.colour,item.gender,sz,q,item.price,item.grade,item.launch_date]));
-  });
   const ws2=XLSX.utils.aoa_to_sheet(raw);
+  ws2['!cols']=[14,10,14,16,18,22,8,8,6,10,8,12].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb,ws2,'Raw Data (Import)');
 
   XLSX.writeFile(wb,`LiNing_Order_27Q1_${new Date().toISOString().slice(0,10)}.xlsx`);
-  showToast(lang==='ru'?`Выгружено ${tu} единиц`:`Exported ${tu} units`,'ok');
+  showToast(lang==='ru'?`Выгружено ${CATALOG.length} строк, ${tu} единиц`:`Exported ${CATALOG.length} rows, ${tu} units`,'ok');
 }
 
 // ═══════════════════════ REIMPORT ORDER ═══════════════════════
